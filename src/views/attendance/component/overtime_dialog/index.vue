@@ -22,21 +22,21 @@
           status-icon
           style="max-width: 600px"
       >
-        <el-form-item :label="t('最小计时单位')" prop="minTimeUnit">
-          <el-select
-              v-model="overtime_date.minTimeUnit"
-              size="large"
-              style="width: 240px"
-          >
-            <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-            />
-          </el-select>
-          <span class="select_text">系统按半小时统计考勤报表，不足半小时的部分不计入，例如0.8小时将按0.5小时计入 </span>
-        </el-form-item>
+<!--        <el-form-item :label="t('最小计时单位')" prop="minTimeUnit">-->
+<!--          <el-select-->
+<!--              v-model="overtime_date.minTimeUnit"-->
+<!--              size="large"-->
+<!--              style="width: 240px"-->
+<!--          >-->
+<!--            <el-option-->
+<!--                v-for="item in options"-->
+<!--                :key="item.value"-->
+<!--                :label="item.label"-->
+<!--                :value="item.value"-->
+<!--            />-->
+<!--          </el-select>-->
+<!--          <span class="select_text">系统按半小时统计考勤报表，不足半小时的部分不计入，例如0.8小时将按0.5小时计入 </span>-->
+<!--        </el-form-item>-->
         <el-form-item>
           <el-tabs v-model="overtime_date.type" class="demo_tabs" @tab-click="handleClick">
             <el-tab-pane :label="t('工作日')" class="tab_pane" :name="1">
@@ -139,13 +139,13 @@ const overtime_date_copy = ref<any>({
   shortestTime:0
 })
 const rules = computed<FormRules>(() => ({
-  minTimeUnit: [
-    {
-      required: true,
-      message: t('最小计时单位') + t('不能为空'),
-      trigger: 'blur',
-    },
-  ],
+  // minTimeUnit: [
+  //   {
+  //     required: true,
+  //     message: t('最小计时单位') + t('不能为空'),
+  //     trigger: 'blur',
+  //   },
+  // ],
 }));
 const options = [
   {value: 1, label: t('半小时')},
