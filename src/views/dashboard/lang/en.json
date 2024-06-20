@@ -1,0 +1,14 @@
+{
+  "编辑基本信息": "Edit basic information",
+  "公司/园区名称": "Company/Park Name",
+  "输入内容不能为空": "The input content cannot be empty",
+  "项目位置": "Project location",
+  "详细地址": "Detailed address",
+  "地址不能为空": "The address cannot be empty",
+  "公司/园区名称不能为空:": "Company/park name cannot be empty",
+  "项目位置不能为空:": "Project location cannot be empty",
+"楼栋数": "Number of buildings",
+  "楼栋数不能为空": "The number of buildings cannot be empty",
+  "(栋)": "(Building)",
+"今日考勤": "Today attendance"
+}
