@@ -1,19 +1,19 @@
 <template>
   <el-card class="top_content">
     <div class="top">
-      <div class="title">实时通行记录</div>
+      <div class="title">{{t('实时通行记录')}}</div>
 
       <router-link class="photo_item" to="/authorization/traffic_records">
-        <div class="top_right">查看详情></div>
+        <div class="top_right">{{t('查看详情')}}></div>
       </router-link>
     </div>
 
     <div class="floot">
       <div class="floot_top">
-        <div class="floot_content">姓名</div>
-        <div class="floot_content">验证方式</div>
-        <div class="floot_content">设备位置</div>
-        <div class="floot_content end">通行时间</div>
+        <div class="floot_content">{{t('姓名')}}</div>
+        <div class="floot_content">{{t('验证方式')}}</div>
+        <div class="floot_content">{{t('设备位置')}}</div>
+        <div class="floot_content end">{{t('通行时间')}}</div>
       </div>
       <vue3-seamless-scroll
           class="scroll"
@@ -40,11 +40,12 @@
 import { Vue3SeamlessScroll } from 'vue3-seamless-scroll';
 import {ref} from 'vue';
 import {useUserStore,useCommonStore} from "@/store";
+import {useLocalesI18n} from "@/locales/hooks";
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'dashboard']);
 const isScroll=ref(true) //开始滾動
 const UserStore = useUserStore()
 const useCommon = useCommonStore()
 const message_data = computed(()=>useCommon.localStorage_data)
-// console.log(message_data,'---message_data')
 const message = ref([
   {
     content:{
@@ -56,20 +57,14 @@ const message = ref([
     event:''
   }
 ])
-const  textMappings =ref({
-  'ACS/pass': '门禁通行',
-  'ITs/vehicle': '车辆通行',
-  'AI/face': '摄像头抓拍',
-  'USER/message': '用户消息',
-  'unknown': '未知',
-})
+//验证方式
 const getButtonText = (item) => {
   const textMappings = {
-    'ACS/pass': '门禁通行',
-    'ITS/vehicle': '车辆通行',
-    'AI/face': '摄像头抓拍',
-    'USER/message': '用户消息',
-    'unknown': '未知',
+    'ACS/pass': t('门禁通行'),
+    'ITS/vehicle': t('车辆通行'),
+    'AI/face': t('摄像头抓拍'),
+    'USER/message': t('用户消息'),
+    'unknown': t('未知'),
   };
 
   return textMappings[item] || '';
@@ -83,7 +78,6 @@ onMounted(()=>{
 
 watch(() => message_data.value,
     (newVal) => {
-      console.log(newVal, '-- 当前返回的数据');
       message.value = newVal
       message.value = message.value.filter(v => !v.content.eventId );
 

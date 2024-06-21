@@ -1,10 +1,10 @@
 <template>
   <el-card class="top_content">
     <div class="top">
-      <div class="title">快捷功能</div>
+      <div class="title">{{t('快捷功能')}}</div>
 
       <router-link class="photo_item" to="/visitor/statistics">
-        <div class="top_right">查看详情></div>
+        <div class="top_right">{{t('查看详情')}}></div>
       </router-link>
     </div>
     <div class="box-wrapper">
@@ -14,7 +14,7 @@
           <CountTo
               :autoplay=true
               :duration="3000"
-              :endVal="item.num"
+              :endVal="Math.abs (item.num)"
               :startVal="0"
               class="count">
           </CountTo>
@@ -23,11 +23,11 @@
     </div>
     <div class="floot">
       <div class="floot_top">
-        <div class="floot_content">访问姓名</div>
-        <div class="floot_content">车牌号</div>
-        <div class="floot_content">被访人</div>
-        <div class="floot_content end">拜访事由</div>
-        <div class="floot_content end">来访时间</div>
+        <div class="floot_content">{{t('访客姓名')}}</div>
+        <div class="floot_content">{{t('车牌号')}}</div>
+        <div class="floot_content">{{t('被访人')}}</div>
+        <div class="floot_content end">{{t('拜访事由')}}</div>
+        <div class="floot_content end">{{t('来访时间')}}</div>
       </div>
       <vue3-seamless-scroll
           class="scroll"
@@ -53,12 +53,16 @@
 
 <script lang="ts" setup>
 import {CountTo} from 'vue3-count-to';
+
 import { Vue3SeamlessScroll } from 'vue3-seamless-scroll';
 import {ref} from 'vue';
 import {visitor_statistics} from "@/api/dashboard";
 import {useUserStore} from "@/store";
 import {visitor_record} from "@/api/visitor";
 import {format_data} from "@/utils/packagingmethod/time";
+import {useLocalesI18n} from "@/locales/hooks";
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'dashboard']);
+
 const isScroll=ref(true) //开始滾動
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
@@ -85,10 +89,10 @@ const traffic_records =ref({
   ],
 })
 const date = ref([
-  {title: '本月来访', num: 16, id: 1},
-  {title: '今日来访', num: 9, id: 2},
-  {title: '今日预约', num: 10, id: 3},
-  {title: '今日未到访', num: 5, id: 4},
+  {title: t('本月来访'), num: 16, id: 1},
+  {title: t('今日来访'), num: 9, id: 2},
+  {title: t('今日预约'), num: 10, id: 3},
+  {title: t('今日未到访'), num: 5, id: 4},
 ]);
 
 const route = useRoute();
@@ -135,15 +139,7 @@ onMounted(()=>{
   visitor(plotId)
   visitor_all(plotId,current_page.value,page_size.value)
 })
-// watch(
-//     route,
-//     async () => {
-//       await visitor(plotId)
-//      await visitor_all(plotId,current_page.value,page_size.value)
-//
-//     },
-//     // { deep: true },
-// );
+
 </script>
 
 <style lang="scss" scoped>

@@ -1,6 +1,6 @@
 <template>
   <el-card class="top_content">
-    <div class="title">快捷功能</div>
+    <div class="title">{{t('快捷功能')}}</div>
     <div class="photo_top">
       <router-link v-for="(item, index) in date" :key="item.id" :to="item.link" class="photo_item">
         <img :src="item.images">
@@ -15,13 +15,15 @@ import addDevice from '@/assets/images/png/addDevice.png'
 import personnel from '@/assets/images/png/personnel.png'
 import registration from '@/assets/images/png/registration.png'
 import surveillance from '@/assets/images/png/surveillance.png'
+import {useLocalesI18n} from "@/locales/hooks";
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'dashboard']);
 
 const date = ref([
-  {images: addDevice, title: '添加设备', id: 1, link: '/management/device'},
-  {images: personnel, title: '人员录入', id: 2, link: '/personnel/configuration'},
-  {images: registration, title: '来访登记', id: 3, link: '/visitor/code'},
-  {images: addDevice, title: '考勤规则', id: 4, link: '/attendance/rules'},
-  {images: surveillance, title: '视频监控', id: 5, link: '/preview/video'},
+  {images: addDevice, title: t('添加设备'), id: 1, link: '/management/device'},
+  {images: personnel, title: t('人员录入'), id: 2, link: '/personnel/configuration'},
+  {images: registration, title: t('来访登记'), id: 3, link: '/visitor/code'},
+  {images: addDevice, title: t('考勤规则'), id: 4, link: '/attendance/rules'},
+  {images: surveillance, title: t('视频监控'), id: 5, link: '/preview/video'},
 ])
 
 </script>
