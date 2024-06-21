@@ -205,7 +205,8 @@ const props = defineProps({  //父组件爱你传递过来的弹框状态
     default: {}
   },
 })
-const emit = defineEmits();   //定义子组件传递方法
+const emit = defineEmits();   //定义子组件传递方法.
+const table_ref =ref(null)//当前考勤班次的示例
 const rule_form = ref<any>({
   name: '',//*规则名称:
   type: 1, //*规则名称:
@@ -247,13 +248,10 @@ const shift_all = ref({
 )
 //点击考勤人员按钮 弹出dialog
 const handle_personnel = () => {
-  console.log('点击考勤人员按钮--')
   person_dialog.value = true
 }
 //personnel_dialog 考勤人员组建回调上来的数据
 const handle_save_dialog = (dialog_status: boolean, status: string,data:any) => {
-  console.log(dialog_status, '--当前考勤弹框的状态')
-  console.log(status, '--当前考勤弹框确认还是取消')
   person_dialog.value = dialog_status
   if (status ==='cancel')return true
   rule_form.value.personList = data
@@ -285,8 +283,6 @@ const handle_equipment = () => {
 }
 //点击考勤弹框传递上来的数据
 const handle_save_equipment = (dialog_status: boolean, status: string,data:any) => {
-  console.log(dialog_status, '--当前考勤弹框的状态')
-  console.log(status, '--当前考勤弹框确认还是取消')
   equipment.value = dialog_status
   if (status ==='cancel')return true
   rule_form.value.attendanceRuleDeviceList = data
@@ -295,7 +291,6 @@ const handle_save_equipment = (dialog_status: boolean, status: string,data:any) 
 //考勤时间组建返回上来的数据
 const handle_save_time = (data:any)=>{
   rule_form.value.attendanceRuleSchedulingList = data
-  console.log( rule_form.value.attendanceRuleSchedulingList,'-- rule_form.value')
 }
 
 //抽屉取消
@@ -318,44 +313,33 @@ const handle_save = () => {
 }
 //点击加班规则
 const handle_overtime = () => {
-  console.log('点击加班规则')
   overtime_dia.value = true
 }
 //加班统计返回上来的状态数据
 const handle_overtime_dialog = (dialog_status: boolean, status: string,list:any) => {
-  console.log(dialog_status, '--当前考勤弹框的状态')
-  console.log(status, '--当前考勤弹框确认还是取消')
-  console.log(list,'--list')
   overtime_dia.value = dialog_status
   if (status == 'cancel') return true
   rule_form.value.overtimeRuleList = list
 }
 //添加班次
 const handle_shift = () => {
-  console.log('添加班次')
   shift_dia.value = true
 }
 //添加班次返回的数据
 const handle_shift_dialog =async (dialog_status: boolean, status: string) => {
-  console.log(dialog_status, '--当前考勤弹框的状态')
-  console.log(status, '--当前考勤弹框确认还是取消')
   shift_dia.value = dialog_status
   if (status == 'cancel') return true
   await shift_init(plotId)
-
 
 }
 //添加班次table选中的框
 const handleSelectionChange = (val: any) => {
   multipleSelection.value =val.map(item => item.id);
-  console.log(multipleSelection.value, '--当前考勤班次选中的')
   // classIds
   rule_form.value.classIds =  multipleSelection.value
 }
 
 const handle_shift_del = (row: any) => {
-  console.log(row,'--row')
-  console.log('删除考勤班次')
   ElMessageBox.confirm(
       t('将删除您所勾选的班次，是否确认?'),
       t('删除确认'),
@@ -394,7 +378,6 @@ const handle_radio_group = async (value: number) => {
 //获取节假日列表
 const holiday_plan_all = async  (plotId:number,name?:string)=>{
   const res =await holiday_plan(plotId,name)
-  console.log(res,'--res')
   if (res.data.code===200){
     plans_data.value = res.data.data
 
@@ -403,7 +386,6 @@ const holiday_plan_all = async  (plotId:number,name?:string)=>{
 const shift_init =async (plotId:number, page?:any,size?:any)=>{
   const res =await attendance_list(plotId,page,size)
    shift_all.value = res.data.data
-  console.log(res.data.data,'--res---------------')
 }
 const del_shift = async (id:string) => {
   const res = await shift_del({
@@ -417,18 +399,40 @@ const del_shift = async (id:string) => {
 
   }
 }
+const toggleSelection =(list:any,status:string)=>{
+  if (table_ref.value){
+    if (status === 'add'){
+        shift_all.value.records.forEach((row: any) => {
+        table_ref.value.toggleRowSelection(row, false); // 默认勾选
+      })
+    }else {
+      let filter_data = shift_all.value.records.filter(itemB => list.some(itemA => itemA.id === itemB.id));
+      filter_data.forEach((row:any)=>{
+        table_ref.value.toggleRowSelection(row, true); // 默认勾选
+      })
+    }
+  }
+}
+const init_toggleSelection =(data:any,status:string)=>{
+  nextTick(() => {
+    toggleSelection(data,status)
+  })
+}
+
 onMounted(async ()=>{
  await  holiday_plan_all(plotId)//获取初始部门列表
 })
 watch(() => props.drawer_flag,
-    (newVal) => {
-      console.log(newVal, '-- 当前返回的数据');
+  async  (newVal) => {
       drawer.value = newVal.drawer;
       rule_form.value = JSON.parse(JSON.stringify(newVal.attendance))
-      console.log( rule_form.value,'-- rule_form.value')//当前表格传递下来的数据
       drawer_status.value = newVal.status
     if ( rule_form.value.type === 2 && drawer_status.value ==='edit'){
-      shift_init(30)
+     await shift_init(plotId)
+      init_toggleSelection( rule_form.value.attendanceRuleSchedulingList,'edit')
+      multipleSelection.value = rule_form.value.attendanceRuleSchedulingList
+    }else if (rule_form.value.type === 2 && drawer_status.value ==='add'){
+      init_toggleSelection( rule_form.value.attendanceRuleSchedulingList,'add')
     }
     },
     {deep: true},

@@ -290,9 +290,18 @@ const getRowKey = (row:any)=>{
 const toggleSelection = (list:any,status:string)=>{
   if (multiple_Ref.value){
     if (status === 'add'){
-      personnel_date.value.records.forEach((row: any) => {
-        multiple_Ref.value.toggleRowSelection(row, false); // 默认勾选
+      if (list.length !==0){
+        let filter_data = personnel_date.value.records.filter(itemB => list.some(itemA => itemA.personId === itemB.id));
+        filter_data.forEach((row:any)=>{
+          multiple_Ref.value.toggleRowSelection(row, true); // 默认勾选
         })
+      }else {
+        personnel_date.value.records.forEach((row: any) => {
+          multiple_Ref.value.toggleRowSelection(row, false); // 默认勾选
+        })
+      }
+
+
     }
     else  {
       let filter_data = personnel_date.value.records.filter(itemB => list.some(itemA => itemA.personId === itemB.id));
@@ -303,19 +312,20 @@ const toggleSelection = (list:any,status:string)=>{
 
   }
 }
-
+//二次修改了添加时候设备的状态
 watch(
     [ () => props.dialog,()=>props.status,()=>props.data,()=>props.id],
     async ([newVal, newStatus,newData]) => {
+      console.log(newData,'--newData')
       dialog_visible.value = newVal;
       new_status.value = newStatus
       await handle_department(plotId)//获取初始部门列表
       if (newStatus ==='add'){
         attendanceRuleId.value = ''
-        edit_selection.value = []
+        edit_selection.value = newData
         await personnel_list_all(tree_node.value, 0, page_size.value, 1,parentPath.value,true,attendanceRuleId.value,search_person.value)
         toggleSelection(edit_selection.value,new_status.value)
-        multipleSelection.value =  []
+        multipleSelection.value = newData
 
 
       }else  {

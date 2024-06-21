@@ -181,19 +181,22 @@ const attendance_device_all =async (
 const toggleSelection = (list:any,status:string)=>{
 
   if (multiple_Ref.value){
-    console.log('在的')
-    console.log(list,'--list------------')
-    console.log(status,'--status------------')
     if (status === 'add'){
-      device_list.value.records.forEach((row: any) => {
-        multiple_Ref.value.toggleRowSelection(row, false); // 默认勾选
-      })
+      if (list.length !==0){
+        let filter_data = device_list.value.records.filter(itemB => list.some(itemA => itemA.deviceId === itemB.deviceId));
+        filter_data.forEach((row:any)=>{
+          multiple_Ref.value.toggleRowSelection(row, true); // 默认勾选
+        })
+      }else {
+        device_list.value.records.forEach((row: any) => {
+          multiple_Ref.value.toggleRowSelection(row, false); // 默认勾选
+        })
+      }
+
+
     }
     else  {
-      console.log('走这里')
-      console.log(device_list.value.records,'---device_list.value.records')
       let filter_data = device_list.value.records.filter(v => list.some(itemA => itemA.deviceId == v.deviceId));
-      console.log(filter_data,'--filter_data')
       filter_data.forEach((row:any)=>{
         multiple_Ref.value.toggleRowSelection(row, true); // 默认勾选
       })
@@ -208,7 +211,7 @@ watch([() => props.equipment_dia,()=>props.status,()=>props.data,()=>props.id],
       new_status.value = newStatus
       if (newStatus === 'add') {
         attendanceRuleId.value = ''
-        edit_selection.value = []
+        edit_selection.value = newData
         console.log( attendanceRuleId.value,'---aaaaaaaaaa')
       await  attendance_device_all(
             plotId,
@@ -220,7 +223,7 @@ watch([() => props.equipment_dia,()=>props.status,()=>props.data,()=>props.id],
             search_person.value
         )
         toggleSelection(edit_selection.value, newStatus)
-        multipleSelection.value = []
+        multipleSelection.value = newData
 
       } else {
         edit_selection.value = newData  //当前的数据

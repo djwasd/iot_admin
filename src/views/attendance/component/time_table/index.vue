@@ -232,15 +232,10 @@ const handle_time_change = (row:any, field:string, value:any)=>{
 }
 const edit_init = (val:any)=>{
   end_date.value = val
-  console.log(end_date.value,'--end_date.value')
-  // emit('save_time', end_date.value)
 }
 const handle_save =()=>{
-  console.log(end_date.value,'--end_date.value')
-  console.log( multipleSelection.value,'-- multipleSelection.value')
   let data =  multipleSelection.value.filter(itemA => !end_date.value.some(itemB => itemB.week === itemA.week)).concat(end_date.value);
   result.value =  transformTimeStamps(data)
-  console.log(  result.value,'--  result.value')
   emit('save_time',   result.value)
   message(t('添加考勤时间成功'),{type:'success'})
   end_date.value = []
@@ -257,34 +252,25 @@ const init_date = (list:any)=>{
 
 }
 const toggleSelection = (list: any, status: string, tableRef: any) => {
-  console.log(list,'-------list-----')
   if (tableRef) {
     if (status === 'add') {
       if (list.length ===0){
-        console.log(1111)
-        console.log(  result.value,'--  result.value')
         tableData.value.forEach((row: any) => {
           tableRef.toggleRowSelection(row, false); // 默认勾选
         });
       }else {
-        console.log('不等于0')
-        console.log(222)
         let list_data = tableData.value.filter((itemB: any) =>
             list.some((itemA: any) => itemA.week === itemB.week)
         );
-        console.log(tableData.value,'--tableData.value')
-        console.log(list_data,'--list_data')
         list_data.forEach((row: any) => {
           tableRef.toggleRowSelection(row, true); // 默认勾选
         });
       }
 
     } else {
-      console.log(222)
       let filter_data = tableData.value.filter((itemB: any) =>
           list.some((itemA: any) => itemA.week === itemB.week)
       );
-      console.log(filter_data,'--filter_data')
       filter_data.forEach((row: any) => {
         tableRef.toggleRowSelection(row, true); // 默认勾选
       });
