@@ -3,7 +3,7 @@
     <div class="top">
       <div class="title">快捷功能</div>
 
-      <router-link class="photo_item" to="/example/permission">
+      <router-link class="photo_item" to="/visitor/statistics">
         <div class="top_right">查看详情></div>
       </router-link>
     </div>

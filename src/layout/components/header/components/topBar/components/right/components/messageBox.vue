@@ -174,7 +174,7 @@
 </template>
 <script setup lang="ts" name="MessageBox">
 
-import {useUserStore} from "@/store";
+import {useUserStore,useCommonStore} from "@/store";
 import {useLocalesI18n} from "@/locales/hooks";
 import {audit} from "@/api/system";
 import {message} from "@/utils/components/message";
@@ -183,8 +183,8 @@ const { t } = useLocalesI18n({}, [(locale: string) => import(`../../../../../../
 
 const isDot = ref(true);
 const ipAddress = window.location.host;
-console.log(ipAddress,'-ipAddress')
 const UserStore = useUserStore()
+const UseComom = useCommonStore()
 const token = UserStore.user.token
 const userId =UserStore.user.userId
 
@@ -219,13 +219,12 @@ const  applyStatusStyle = (applyStatus:any) => {
   return { color };
 }
 const connectWebSocket = ()=>{
-
   const a:any = JSON.parse(localStorage.getItem(message_data.value) as string);
-  if (a !== null && userId == a[0].userId) {
+  if (a !== null && userId == a[0].content.userId) {
     // list.value =filterDuplicates(a) ;
-
     list.value =filterByEventId(a) ;
   } else {
+    console.log(222222)
     localStorage.removeItem(message_data.value);
   }
 const env =   import.meta.env.VITE_USER_NODE_ENV
@@ -247,6 +246,7 @@ const env =   import.meta.env.VITE_USER_NODE_ENV
       all_data.value = all_data.value.concat(list.value);
       localStorage.setItem(message_data.value,JSON.stringify( all_data.value))
       list.value = JSON.parse(localStorage.getItem(message_data.value) as string);
+      UseComom.init_loc()
       all_data.value = []
     }else {
       console.log('是空数组')

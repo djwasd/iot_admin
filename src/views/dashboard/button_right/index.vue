@@ -3,7 +3,7 @@
     <div class="top">
       <div class="title">实时通行记录</div>
 
-      <router-link class="photo_item" to="/example/permission">
+      <router-link class="photo_item" to="/authorization/traffic_records">
         <div class="top_right">查看详情></div>
       </router-link>
     </div>
@@ -13,7 +13,7 @@
         <div class="floot_content">姓名</div>
         <div class="floot_content">验证方式</div>
         <div class="floot_content">设备位置</div>
-        <div class="floot_content end">设备位置</div>
+        <div class="floot_content end">通行时间</div>
       </div>
       <vue3-seamless-scroll
           class="scroll"
@@ -24,11 +24,11 @@
           :limit-scroll-num="3"
           :wheel="true"
       >
-        <div v-for="item in message" :key="item.id" class="floot_button">
-          <div class="button_content">{{ item.name }}</div>
-          <div class="button_content">{{ item.License }}</div>
-          <div class="button_content person">{{ item.Imitated_person }}</div>
-          <div class="button_content end">{{ item.start_time }}</div>
+        <div v-for="(item,index) in message" :key="item.index"   class="floot_button">
+          <div class="button_content">{{ item.content.name }}</div>
+          <div class="button_content">{{ getButtonText(item.event) }}</div>
+          <div class="button_content person">{{ item.content.deviceAddress }}</div>
+          <div class="button_content end">{{ item.content.passTime }}</div>
         </div>
       </vue3-seamless-scroll>
 
@@ -39,23 +39,58 @@
 <script lang="ts" setup>
 import { Vue3SeamlessScroll } from 'vue3-seamless-scroll';
 import {ref} from 'vue';
+import {useUserStore,useCommonStore} from "@/store";
 const isScroll=ref(true) //开始滾動
-
-
+const UserStore = useUserStore()
+const useCommon = useCommonStore()
+const message_data = computed(()=>useCommon.localStorage_data)
+// console.log(message_data,'---message_data')
 const message = ref([
-  {id:1,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-  {id:2,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-  {id:3,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-  {id:4,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-  {id:5,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-  {id:6,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-  {id:7,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-  {id:8,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-  {id:9,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-  {id:10,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-  {id:11,name: '庄彬', License:'刷卡',Imitated_person:'6栋C出口2号机' ,start_time:'2024-04-01-08:00' },
-
+  {
+    content:{
+    name:'',
+      deviceAddress:'',//设备位置
+      passTime:'',//通行时间
+      verificationMode:'',//
+    },
+    event:''
+  }
 ])
+const  textMappings =ref({
+  'ACS/pass': '门禁通行',
+  'ITs/vehicle': '车辆通行',
+  'AI/face': '摄像头抓拍',
+  'USER/message': '用户消息',
+  'unknown': '未知',
+})
+const getButtonText = (item) => {
+  const textMappings = {
+    'ACS/pass': '门禁通行',
+    'ITS/vehicle': '车辆通行',
+    'AI/face': '摄像头抓拍',
+    'USER/message': '用户消息',
+    'unknown': '未知',
+  };
+
+  return textMappings[item] || '';
+};
+
+
+onMounted(()=>{
+  useCommon.init_loc()
+
+})
+
+watch(() => message_data.value,
+    (newVal) => {
+      console.log(newVal, '-- 当前返回的数据');
+      message.value = newVal
+      message.value = message.value.filter(v => !v.content.eventId );
+
+    },
+    {immediate: true},
+);
+
 </script>
 
 <style lang="scss" scoped>

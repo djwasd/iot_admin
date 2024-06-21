@@ -40,7 +40,6 @@ import top_right from './top_right/index.vue'
 import button_left from './button_left/index.vue'
 import button_content from './button_content/index.vue'
 import button_right from './button_right/index.vue'
-
 </script>
 
 <style scoped lang="scss">

@@ -1,5 +1,5 @@
 export interface GlobalCommon {
-    attendance:any
+    localStorage_data:any
 }
 export interface GlobAlattend {
     attendance:any
