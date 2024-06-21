@@ -115,7 +115,8 @@ const source = ref<number>(3)
 const  applyStatusStyle = (applyStatus:any) => {
   const statusColors = {
     1: 'orange',
-    2: 'green',
+    2: 'red',
+    3:'green',
     default: 'red'
   };
 

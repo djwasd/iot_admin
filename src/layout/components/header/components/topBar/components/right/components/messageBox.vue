@@ -174,11 +174,12 @@
 </template>
 <script setup lang="ts" name="MessageBox">
 
-import {useUserStore,useCommonStore} from "@/store";
+import {useCommonStore, useUserStore} from "@/store";
 import {useLocalesI18n} from "@/locales/hooks";
 import {audit} from "@/api/system";
 import {message} from "@/utils/components/message";
 import {action_audit} from "@/api/visitor";
+
 const { t } = useLocalesI18n({}, [(locale: string) => import(`../../../../../../lang/${locale}.json`), 'system']);
 
 const isDot = ref(true);
@@ -295,8 +296,7 @@ const handle_refuse =async (item: any) => {
 }
 const filterByEventId = (array:any) => {
   return array.filter((item:any, index:number, arr:any) => {
-    const isFirstItem = arr.findIndex(obj => obj.eventId === item.eventId) === index;
-    return isFirstItem;
+    return arr.findIndex(obj => obj.content.eventId === item.content.eventId) === index;
   });
 }
 onMounted(()=>{
