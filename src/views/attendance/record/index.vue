@@ -47,7 +47,7 @@
                 value-format="x"
             />
             <el-button  @click="handle_festival"  class="left_button"  type="primary">{{ t('查询') }}</el-button>
-            <el-button  @click="handle_festival"    >{{ t('考勤导出') }}</el-button>
+            <el-button  @click="handle_import"    >{{ t('考勤导出') }}</el-button>
 
           </div>
           <div class="function_right">
@@ -137,9 +137,11 @@
 import {useLocalesI18n} from "@/locales/hooks";
 import {actions_list} from "@/api/person";
 import {useUserStore} from "@/store";
-import {actions_page} from "@/api/attendance";
+import {actions_import, actions_page} from "@/api/attendance";
 import no_pic from "@/assets/images/png/no_pic.png";
 import {format_data} from "@/utils/packagingmethod/time";
+import {download_excel} from "@/utils/packagingmethod/utils";
+import {message} from "@/utils/components/message";
 
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'attendance']);
 const UserStore = useUserStore()
@@ -239,7 +241,27 @@ const actions_init = async (
     actions_data.value = res.data.data
   }
 }
+//考勤导出
+const handle_import =async () => {
+  await import_actions(tree_node.value, current_page.value, page_size.value, time.value[0], time.value[1], search_person.value)
+}
+const import_actions = async (
+    orgId: string,
+    page: any,
+    size: any,
+    startTimestamp?: number,
+    endTimestamp?: number,
+    name?: string) => {
+  const res = await actions_import(orgId, page, size, startTimestamp, endTimestamp, name)
+  console.log(res,'--res')
+  if (res.data.code === 200){
+    let excel = t('考勤记录表')
+    download_excel(res.data,excel );
+  }else {
+    message(res.data.message,{type:'error'})
+  }
 
+}
 onMounted(async () => {
   await handle_department(plotId)//获取初始部门列表
   await actions_init(tree_node.value,current_page.value,page_size.value)
@@ -370,6 +392,14 @@ onMounted(async () => {
 
           }
         }
+      }
+      .table-wrapper {
+        padding-left: 20px;
+      }
+      .pagination {
+        padding: 20px 20px;
+        display: flex;
+        justify-content: flex-end;
       }
     }
 

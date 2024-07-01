@@ -133,7 +133,7 @@ onMounted(async () => {
 
     .echarts {
       /* 调整饼图的样式 */
-      margin-right: 20px; /* 调整饼图与右侧内容的间距 */
+      margin-right: -10px; /* 调整饼图与右侧内容的间距 */
       flex: 0 0 auto; /* 禁止饼图自动缩放 */
     }
 

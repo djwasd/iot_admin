@@ -269,3 +269,30 @@ export function actions_page (
         method:'GET',
     })
 }
+//分页导出考勤人员记录列表
+export function actions_import (
+    orgId:string,
+    page:any,
+    size:any,
+    startTimestamp?: number,
+    endTimestamp?: number,
+    name?:string
+) {
+    let url = `/operation/cloud/web/sys/api/attendance/person/record/actions/export?orgId=${orgId}&page=${page}&size=${size}`;
+
+    if (startTimestamp !== undefined ) {
+        url += `&startTimestamp=${startTimestamp}`;
+    }
+    if (endTimestamp !== undefined  ) {
+        url += `&endTimestamp=${endTimestamp}`;
+    }
+    if (name !== undefined && name!== '' ) {
+        url += `&name=${name}`;
+    }
+
+    return request({
+        url:url,
+        method:'GET',
+        responseType: "blob",
+    })
+}
