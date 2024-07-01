@@ -49,6 +49,9 @@ request.interceptors.response.use(
 		if (error.response.status ===502){
 			message('服务器未开启',{type:'error'})
 		}else  if (error.response.status ===500){
+			cookies.remove(config.tokenName, {
+				domain: config.tokenDomain,
+			});
 			window.location.replace('/login');
 
 		}

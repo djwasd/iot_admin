@@ -27,7 +27,7 @@
               </div>
               <div class="showIcon">
                 <el-dropdown trigger="click" @command="(command:string) => handleCommand(command, data)">
-                  <me-icon-Ellipsis class="icon"/>
+                  <me-icon-Ellipsis class="icon" style="font-size: 1.6em"/>
 
                   <template #dropdown>
                     <el-dropdown-menu>
@@ -341,7 +341,7 @@ onMounted(() => {
 }
 
 .showIcon {
-  display: none;
+  opacity: 0;
 }
 
 .showIcon_top {

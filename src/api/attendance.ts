@@ -243,3 +243,29 @@ export function  attachment_edit (data:any) {
         data
     })
 }
+//分页查询考勤人员记录列表
+export function actions_page (
+    orgId:string,
+    page:any,
+    size:any,
+    startTimestamp?: number,
+    endTimestamp?: number,
+    name?:string
+) {
+    let url = `/operation/cloud/web/sys/api/attendance/person/record/actions/page?orgId=${orgId}&page=${page}&size=${size}`;
+
+    if (startTimestamp !== undefined ) {
+        url += `&startTimestamp=${startTimestamp}`;
+    }
+    if (endTimestamp !== undefined  ) {
+        url += `&endTimestamp=${endTimestamp}`;
+    }
+    if (name !== undefined && name!== '' ) {
+        url += `&name=${name}`;
+    }
+
+    return request({
+        url:url,
+        method:'GET',
+    })
+}

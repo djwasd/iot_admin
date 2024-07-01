@@ -14,14 +14,15 @@
             :props="defaultProps"
             class="full-height"
             @node-click="handleNodeClick"
+            :default-expand-all =true
+            :highlight-current="true"
         >
           <template #default="{ node, data }">
 
             <div class="custom_top">
               <div class="custom_content">
                 <mel-icon-menu class="custom_img"></mel-icon-menu>
-                <!--            <img class="custom_img" src="@/assets/images/png/menu.png">-->
-                <div style="margin-left: 5px">{{ node.label }}</div>
+                <div style="margin-left: 5px;">{{ node.label }}</div>
               </div>
 
             </div>
@@ -37,11 +38,13 @@
 
           <div class="function_left">
             <el-date-picker
-                v-model="value2"
-                type="daterange"
+                v-model="time"
+                type="datetimerange"
                 class="left_select"
                 :start-placeholder="t('开始日期')"
                 :end-placeholder="t('结束日期')"
+                format="YYYY-MM-DD HH:mm:ss"
+                value-format="x"
             />
             <el-button  @click="handle_festival"  class="left_button"  type="primary">{{ t('查询') }}</el-button>
             <el-button  @click="handle_festival"    >{{ t('考勤导出') }}</el-button>
@@ -54,27 +57,75 @@
                   :placeholder="t('请输入姓名或ID')"
               >
                 <template #append>
-                  <el-button  icon="mel-icon-search" />
+                  <el-button @click="handle_search"  icon="mel-icon-search" />
                 </template>
               </el-input>
             </div>
           </div>
         </div>
         <div class="table-wrapper">
-          <el-table :data="tableData" style="width: 100%">
-            <el-table-column  prop="date" :label="t('节假日名称')" width="150" />
-            <el-table-column prop="name" :label="t('开始日期')" width="120" />
-            <el-table-column prop="state" :label="t('结束日期')" width="120" />
-            <el-table-column prop="city" :label="t('放假天数')" width="120" />
-            <el-table-column prop="address" show-overflow-tooltip :label="t('补班日期')" width="200" />
-            <el-table-column prop="zip" label="Zip" width="120" />
-            <el-table-column fixed="right" label="Operations" width="120">
-              <template #default>
-                <el-button link type="primary" size="small" >{{t('编辑')}}</el-button>
-                <el-button link type="primary" size="small"> {{t('删除')}}</el-button>
+          <el-table :data="actions_data.records" style="width: 100%">
+            <el-table-column
+                :index="set_index"
+                :label="t('序号')"
+                prop="Number"
+                type="index"
+                width="80"
+            >
+            </el-table-column>
+            <el-table-column  prop="personId" :label="t('ID')" width="150" />
+            <el-table-column prop="personName" :label="t('姓名')" width="120" />
+            <el-table-column prop="recognitionType" :label="t('识别模式')" width="120" >
+              <template #default="{row}">
+                {{row.recognitionType===1?t('人脸'):row.recognitionType===2?t('指纹'):t('门禁')}}
               </template>
             </el-table-column>
+            <el-table-column prop="startAttachmentId" :label="t('抓拍照片')" width="120" >
+              <template #default="{row}">
+                <el-image
+                    style="width: 40px; height: 40px"
+                    :src="git_pic(row)"
+                    :zoom-rate="1.2"
+                    :max-scale="7"
+                    :min-scale="0.2"
+                    fit="cover"
+                    :preview-src-list="[git_pic(row)]"
+                >
+                  <template #error>
+                    <div class="image-slot">
+                      <img :src="no_pic" style="width: 40px; height: 40px">
+                      <!--                    <mel-icon-picture style="width: 50px; height: 50px"></mel-icon-picture>-->
+                    </div>
+                  </template>
+                </el-image>              </template>
+            </el-table-column>
+            <el-table-column prop="startTimestamp" :label="t('上班考勤时间')" width="120" >
+              <template #default="{row}">
+                {{format_data(row.startTimestamp)}}
+              </template>
+            </el-table-column>
+            <el-table-column prop="endTimestamp" :label="t('下班考勤时间')" width="120" >
+              <template #default="{row}">
+                {{format_data(row.endTimestamp)}}
+              </template>
+            </el-table-column>
+            <el-table-column prop="status" :label="t('状态')" width="120" >
+              <template #default="{row}">
+                {{row.status===1?t('正常'):row.recognitionType===2?t('迟到'):t('早退;')}}
+              </template>
+            </el-table-column>
+
           </el-table>
+        </div>
+        <div class="pagination">
+          <el-pagination
+              v-model:current-page="current_page"
+              v-model:page-size="page_size"
+              layout="prev, pager, next, jumper"
+              :total="actions_data.total"
+              @current-change="handleCurrentChange"
+          />
+
         </div>
       </div>
     </div>
@@ -84,69 +135,115 @@
 
 <script lang="ts" setup>
 import {useLocalesI18n} from "@/locales/hooks";
+import {actions_list} from "@/api/person";
+import {useUserStore} from "@/store";
+import {actions_page} from "@/api/attendance";
+import no_pic from "@/assets/images/png/no_pic.png";
+import {format_data} from "@/utils/packagingmethod/time";
+
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'attendance']);
-
-const departmental_date = ref([])
-const tree_node = ref([])
-
-
-
-
-interface Tree {
-  id: string;
-  name: string;
-  type: number;
-  personNumber: number;
-  children?: Tree[];
-}
+const UserStore = useUserStore()
+const plotId = UserStore.user.plotId
+const departmental_date = ref([
+  {id:'0'}
+])
+const tree_node = ref('0')
+const actions_data =ref({
+  "current": 0,
+  "pages": 0,
+  "records": [
+    {
+      "additionStatus": 0,
+      "deviceId": 0,
+      "deviceName": "string",
+      "endAttachmentId": 0,
+      "endTimestamp": 0,
+      "id": 0,
+      "personId": 0,
+      "personName": "string",
+      "recognitionType": 0,
+      "startAttachmentId": 0,
+      "startTimestamp": 0,
+      "status": 0
+    }
+  ],
+  "size": 0,
+  "total": 0
+})
+const current_page = ref(0);//当前页数
+const page_size = ref(12); //每页显示条目个数
 const defaultProps = {
   children: 'children',
   label: 'name',
   id: 'id'
 }
-const tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    state: 'California',
-    city: 'Los Angeles',
-    address: 'No. 189, Grove St, Los Angeles',
-    zip: 'CA 90036',
-    tag: 'Home',
-  },
-  {
-    date: '2016-05-02',
-    name: 'Tom',
-    state: 'California',
-    city: 'Los Angeles',
-    address: 'No. 189, Grove St, Los Angeles',
-    zip: 'CA 90036',
-    tag: 'Office',
-  },
-  {
-    date: '2016-05-04',
-    name: 'Tom',
-    state: 'California',
-    city: 'Los Angeles',
-    address: 'No. 189, Grove St, Los Angeles',
-    zip: 'CA 90036',
-    tag: 'Home',
-  },
-  {
-    date: '2016-05-01',
-    name: 'Tom',
-    state: 'California',
-    city: 'Los Angeles',
-    address: 'No. 189, Grove St, Los Angeles',
-    zip: 'CA 90036',
-    tag: 'Office',
-  },
-]
+const time =ref([])
+const search_person =ref('')//搜索字段
+
 //点击tree
-const handleNodeClick = (data: any) => {
-  tree_node.value = data
+const handleNodeClick = async (data: any) => {
+  tree_node.value = data.id //当前点击的树id
+  await actions_init(tree_node.value, current_page.value, page_size.value, time.value[0], time.value[1], search_person.value)
+
+}
+const handle_festival =async () => {
+  await actions_init(tree_node.value, current_page.value, page_size.value, time.value[0],time.value[1],search_person.value)
+
+}
+const handleCurrentChange =async (val:number) => {
+  current_page.value = val;
+  await actions_init(tree_node.value, current_page.value, page_size.value, time.value[0],time.value[1],search_person.value)
+
+};
+const set_index = (index:number)=>{
+  if (current_page.value >=1){
+    return (current_page.value -1) * page_size.value + index + 1
+
+  }else  {
+    return (current_page.value ) * page_size.value + index + 1
+
+  }
+}
+const git_pic =  (row:any) => {
+  if (row.startAttachmentId) {
+    // const res =  upload_person(row.facePicture);
+    const ipAddress = window.location.host;
+    const url =  `http://${ipAddress}/operation/cloud/web/sys/api/v1/attachment/actions/download?file_id=${row.startAttachmentId}`;
+    return  url
+  }
+  return no_pic;
+};
+
+const handle_search =async () => {
+  await actions_init(tree_node.value, current_page.value, page_size.value, time.value[0], time.value[1], search_person.value)
+
+}
+//初始化获取部门列表
+const handle_department = async (plotId: any) => {
+  const res = await actions_list( plotId)
+  if (res.data.code === 200) {
+    departmental_date.value = res.data.data
+    tree_node.value =   departmental_date.value[0].id
+  }
 }
 
+const actions_init = async (
+    orgId: string,
+    page: any,
+    size: any,
+    startTimestamp?: number,
+    endTimestamp?: number,
+    name?: string) => {
+  const res = await actions_page(orgId, page, size, startTimestamp, endTimestamp, name)
+  if (res.data.code ===200){
+    actions_data.value = res.data.data
+  }
+}
+
+onMounted(async () => {
+  await handle_department(plotId)//获取初始部门列表
+  await actions_init(tree_node.value,current_page.value,page_size.value)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -326,5 +423,9 @@ const handleNodeClick = (data: any) => {
     width: 20px;
     height: 20px;
   }
+}
+:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content)  {
+  background-color: #FFEAEB !important;
+  color: #D42A30;
 }
 </style>

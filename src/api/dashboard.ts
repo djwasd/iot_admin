@@ -51,3 +51,10 @@ export function visitor_statistics (plotId:number) {
         method:'get',
     })
 }
+//首页考勤统计
+export function attendance (plotId:number) {
+    return request({
+        url:`/operation/cloud/web/sys/api/stat/action/home/attendance?plotId=${plotId}`,
+        method:'get',
+    })
+}
