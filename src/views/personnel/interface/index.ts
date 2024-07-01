@@ -1,7 +1,7 @@
 /**
  * PersonDTO
  */
-export interface person_interface{
+export interface person_interface {
     /**
      * 地址
      */
@@ -90,6 +90,7 @@ export interface person_interface{
      * 有效开始时间戳
      */
     startTimestamp: number;
+
     [property: string]: any;
 }
 
@@ -105,5 +106,6 @@ export interface idCard {
      * 卡密码
      */
     password?: string;
+
     [property: string]: any;
 }

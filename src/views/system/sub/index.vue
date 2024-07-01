@@ -1,22 +1,22 @@
 <template>
   <div class="container">
     <div class="left">
-      <div class="company">{{t('子账号管理')}}</div>
+      <div class="company">{{ t('子账号管理') }}</div>
       <div class="company_name" @click="handle_depart">
         <div class="name">
-          <div class="name_left">{{depart_name.slice(0,1)}}</div>
-          <div class="depart_name">{{depart_name}}</div>
+          <div class="name_left">{{ depart_name.slice(0, 1) }}</div>
+          <div class="depart_name">{{ depart_name }}</div>
         </div>
         <!--        <img class="custom_image" src="@/assets/images/png/add.png" style="cursor: pointer" @click="handle_add">-->
       </div>
       <div class="tree">
         <el-tree
             :data="departmental_date"
+            :default-expand-all=true
+            :highlight-current="true"
             :props="defaultProps"
             class="full-height"
             @node-click="handleNodeClick"
-            :default-expand-all =true
-            :highlight-current="true"
         >
           <template #default="{ node, data }">
 
@@ -32,46 +32,46 @@
         </el-tree>
       </div>
     </div>
-    <div class="right" >
+    <div class="right">
       <div class="company">{{ t('账号信息') }}</div>
-      <div class="account" v-if="department_flag===true">
+      <div v-if="department_flag===true" class="account">
         <img class="" src="@/assets/images/png/build.png">
         <div class="account_title">
-          <span>{{depart_name}}</span>
+          <span>{{ depart_name }}</span>
         </div>
         <div class="account_text">
-          <span>{{t('主账号')}}:</span><span>{{plotParentName ===null?t('无'):plotParentName}}</span>
+          <span>{{ t('主账号') }}:</span><span>{{ plotParentName === null ? t('无') : plotParentName }}</span>
         </div>
         <div class="account_bottom">
-          <el-button v-if="plotParentId !=='0'" type="primary" @click="handle_unbinding">{{t('申请解绑')}}</el-button>
-          <el-button v-if="plotParentId ==='0'" @click="handle_binding" type="primary" >{{t('申请绑定')}}</el-button>
+          <el-button v-if="plotParentId !=='0'" type="primary" @click="handle_unbinding">{{ t('申请解绑') }}</el-button>
+          <el-button v-if="plotParentId ==='0'" type="primary" @click="handle_binding">{{ t('申请绑定') }}</el-button>
 
-          <el-button type="primary" @click="handle_password">{{t('修改密码')}}</el-button>
+          <el-button type="primary" @click="handle_password">{{ t('修改密码') }}</el-button>
         </div>
       </div>
       <div v-else>
         <el-table
+            ref="multiple_Ref"
             :data="user_data.records"
             style="width: 100%"
-            ref="multiple_Ref"
         >
-          <el-table-column prop="username" label="用户账号"  />
-          <el-table-column prop="phone" label="手机号"  />
-          <el-table-column prop="status"  show-overflow-tooltip :label="t('启用/禁用')" >
+          <el-table-column label="用户账号" prop="username"/>
+          <el-table-column label="手机号" prop="phone"/>
+          <el-table-column :label="t('启用/禁用')" prop="status" show-overflow-tooltip>
             <template #default="{row}">
               <el-switch
                   v-model="row.status"
-                  class="ml-2"
                   :active-value="2"
                   :inactive-value="3"
+                  class="ml-2"
                   @change="handle_change(row)"
               />
             </template>
           </el-table-column>
-          <el-table-column fixed="right" :label="t('操作')" width="200">
+          <el-table-column :label="t('操作')" fixed="right" width="200">
             <template #default="{row}">
-              <el-button  type="primary" size="small" @click="handle_reset(row)">{{t('重置密码')}}</el-button>
-              <el-button  type="danger" size="small" @click="handle_Unbind()" >   {{t('解绑')}}</el-button>
+              <el-button size="small" type="primary" @click="handle_reset(row)">{{ t('重置密码') }}</el-button>
+              <el-button size="small" type="danger" @click="handle_Unbind()"> {{ t('解绑') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -83,19 +83,18 @@
 </template>
 
 
-
-<script setup lang="ts">
+<script lang="ts" setup>
 import pwd_dialog from '../component/pwd_dialog/index.vue'
 import {useLocalesI18n} from "@/locales/hooks";
 import {useUserStore} from "@/store";
-import {audit, plot_move, reset, seach_list, user_enable, user_list} from "@/api/system";
+import {plot_move, reset, seach_list, user_enable, user_list} from "@/api/system";
 import {message} from "@/utils/components/message";
-import {swich_init} from "@/api/attendance";
-const { t } = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'system']);
+
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'system']);
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
 const plotParentId = UserStore.user.plotParentId
-console.log(typeof plotParentId,'--plotParentId')
+console.log(typeof plotParentId, '--plotParentId')
 const depart_name = UserStore.user.plotName
 const plotParentName = UserStore.user.plotParentName
 const departmental_date = ref({})
@@ -110,38 +109,38 @@ const department_flag = ref<boolean>(true) //展示数据还是公司信息的
 const current_page = ref(0);//当前页数
 const page_size = ref(12); //每页显示条目个数
 const user_data = ref({
-  records:[],
+  records: [],
 })
 
-const handle_depart =()=>{
-  department_flag.value =true
+const handle_depart = () => {
+  department_flag.value = true
 }
 //点击tree
 const handleNodeClick = (data: any) => {
-  department_flag.value =false
-  user_all(data.id, current_page.value,page_size.value)
-  console.log(data,'--data')
+  department_flag.value = false
+  user_all(data.id, current_page.value, page_size.value)
+  console.log(data, '--data')
   tree_id.value = data.id
 }
-const change_status =async (row:any)=>{
-  const res =await user_enable(row.id,{
-    id:row.id,
-    status:row.status
+const change_status = async (row: any) => {
+  const res = await user_enable(row.id, {
+    id: row.id,
+    status: row.status
   })
-  if(res.data.code ===200){
-    message(t('修改成功'),{type:'success'})
-  }else {
-    message(res.data.message,{type:'error'})
+  if (res.data.code === 200) {
+    message(t('修改成功'), {type: 'success'})
+  } else {
+    message(res.data.message, {type: 'error'})
   }
 }
-const handle_change =async (row) => {
-    await change_status(row)
+const handle_change = async (row) => {
+  await change_status(row)
 }
 //申请解绑
 const handle_unbinding = async () => {
   ElMessageBox.confirm(
       t('将向主账号管理员申请账号解除绑定操作'),
-      t('删除')+t('申请解绑'),
+      t('删除') + t('申请解绑'),
       {
         confirmButtonText: t('确认'),
         cancelButtonText: t('取消'),
@@ -151,12 +150,12 @@ const handle_unbinding = async () => {
       .then(async () => {
         const res = await plot_move({
           sourcePlotId: plotId,
-          targetPlotName:'/0/'
+          targetPlotName: '/0/'
         })
-        if (res.data.code ===200){
-          message(t('已申请解绑'),{type:"success"})
-        }else {
-          message(res.data.message,{type:"error"})
+        if (res.data.code === 200) {
+          message(t('已申请解绑'), {type: "success"})
+        } else {
+          message(res.data.message, {type: "error"})
 
         }
       })
@@ -169,7 +168,7 @@ const handle_unbinding = async () => {
 const handle_binding = async () => {
   ElMessageBox.prompt(
       t('将向主账号管理员申请账号绑定操作'),
-     t('申请绑定'),
+      t('申请绑定'),
       {
         confirmButtonText: t('确认'),
         cancelButtonText: t('取消'),
@@ -193,21 +192,21 @@ const handle_binding = async () => {
 
 }
 //修改密码
-const handle_password = ()=>{
+const handle_password = () => {
   pwd_flag.value = true
 }
-const handle_save_dialog = (falg:boolean,status:string)=>{
+const handle_save_dialog = (falg: boolean, status: string) => {
   pwd_flag.value = falg
-  if (status==='cancel') return true
+  if (status === 'cancel') return true
 }
-const depart =async (parentId:number,parentPath:string)=>{
-  const res =await seach_list(parentId,parentPath)
-  if (res.data.code ===200){
+const depart = async (parentId: number, parentPath: string) => {
+  const res = await seach_list(parentId, parentPath)
+  if (res.data.code === 200) {
     departmental_date.value = res.data.data
   }
 }
 //重置密码
-const handle_reset = async (row:any)=>{
+const handle_reset = async (row: any) => {
   ElMessageBox.confirm(
       t('是否重置密码'),
       t('重置密码'),
@@ -219,11 +218,11 @@ const handle_reset = async (row:any)=>{
   )
       .then(async () => {
         const res = await reset({
-          id:row.id
+          id: row.id
         })
-        if (res.data.code ===200){
-          message(t('重置密码成功'),{type:"success"})
-        }else {
+        if (res.data.code === 200) {
+          message(t('重置密码成功'), {type: "success"})
+        } else {
           message(res.data.message, {type: "error"})
 
         }
@@ -233,10 +232,10 @@ const handle_reset = async (row:any)=>{
       })
 
 }
-const handle_Unbind = ()=>{
+const handle_Unbind = () => {
   ElMessageBox.confirm(
       t('是否解绑账号'),
-     t('解绑账号'),
+      t('解绑账号'),
       {
         confirmButtonText: t('确认'),
         cancelButtonText: t('取消'),
@@ -246,12 +245,12 @@ const handle_Unbind = ()=>{
       .then(async () => {
         const res = await plot_move({
           sourcePlotId: tree_id.value,
-          targetPlotName:'/0/'
+          targetPlotName: '/0/'
         })
-        if (res.data.code ===200){
-          message(t('已申请解绑'),{type:"success"})
-        }else {
-          message(t('取消申请解绑'),{type:"error"})
+        if (res.data.code === 200) {
+          message(t('已申请解绑'), {type: "success"})
+        } else {
+          message(t('取消申请解绑'), {type: "error"})
 
         }
       })
@@ -263,20 +262,19 @@ const handle_Unbind = ()=>{
 }
 const user_all = (async (plotId: number, page: number, size: number) => {
   const res = await user_list(plotId, page, size)
-  if (res.data.code ===200){
+  if (res.data.code === 200) {
     user_data.value = res.data.data
   }
 })
 
-onMounted(()=>{
+onMounted(() => {
   depart(plotId, UserStore.user.plotParentPath)
 
 })
 </script>
 
 
-
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .container {
   display: flex;
   width: 100%;
@@ -292,11 +290,13 @@ onMounted(()=>{
     display: flex;
     flex-direction: column;
     box-shadow: 0 3px 6px #D6E2FE;
+
     .company {
       font-size: 18px;
       font-weight: 700;
       margin: 16px 0 0 16px;
     }
+
     .company_name {
       cursor: pointer;
       margin: 20px 0 0 20px;
@@ -311,6 +311,7 @@ onMounted(()=>{
       .name {
         display: flex;
         padding-left: 40px;
+
         .name_left {
           width: 20px;
           height: 20px;
@@ -321,6 +322,7 @@ onMounted(()=>{
           justify-content: center; /* 添加此行 */
           align-items: center; /* 添加此行 */
         }
+
         .depart_name {
           padding-left: 10px;
         }
@@ -364,43 +366,50 @@ onMounted(()=>{
   flex: 1;
   overflow: hidden;
   position: relative;
+
   .company {
     font-size: 18px;
     font-weight: 700;
     margin: 16px 0 0 16px;
   }
+
   .account {
     position: absolute;
     top: 25%;
     left: 45%;
-    img{
+
+    img {
       width: 120px;
       height: 120px;
     }
+
     .account_title {
       font-size: 18px;
       color: #333333;
       font-weight: 700;
       //margin-top: 10px;
     }
+
     .account_text {
       margin: 30px 0 30px -30px;
       font-size: 16px;
-      span{
+
+      span {
         padding: 0 10px 10px;
       }
     }
+
     .account_bottom {
       display: flex;
       margin: 0 20px 0 -20px;
     }
   }
+
   //overflow-x: auto;
 }
 
 
-
-:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content)  {
+:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) {
   background-color: #FFEAEB !important;
   color: #D42A30;
 }

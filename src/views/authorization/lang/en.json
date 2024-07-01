@@ -1,5 +1,5 @@
 {
-"访客登记": "Visitor registration",
+  "访客登记": "Visitor registration",
   "添加授权组": "Add authorization group",
   "授权名称": "Authorization",
   "名称": "Name",
@@ -8,7 +8,7 @@
   "通行周期": "Travel cycle",
   "设备授权": "Device Authorization",
   "人员授权": "Person Authorization",
-"添加": "Add",
+  "添加": "Add",
   "授权组": "Authorization Group",
   "成功": "success",
   "编辑": "edit",

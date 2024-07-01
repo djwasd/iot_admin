@@ -1,22 +1,22 @@
 <template>
   <div class="container">
     <div class="left">
-      <div class="company">{{t('通行记录')}}</div>
+      <div class="company">{{ t('通行记录') }}</div>
       <div class="company_name">
         <div class="name">
-<!--          <div class="name_left">公</div>-->
-          <div class="depart_name">{{t('所有')}}{{t('通行记录')}}</div>
+          <!--          <div class="name_left">公</div>-->
+          <div class="depart_name">{{ t('所有') }}{{ t('通行记录') }}</div>
         </div>
         <!--        <img class="custom_image" src="@/assets/images/png/add.png" style="cursor: pointer" @click="handle_add">-->
       </div>
       <div class="tree">
         <el-tree
             :data="departmental_date"
+            :default-expand-all=true
+            :highlight-current="true"
             :props="defaultProps"
             class="full-height"
             @node-click="handleNodeClick"
-            :default-expand-all =true
-            :highlight-current="true"
         >
           <template #default="{ node, data }">
 
@@ -34,7 +34,7 @@
       </div>
     </div>
     <div class="right">
-          11111
+      11111
     </div>
   </div>
 </template>
@@ -47,7 +47,7 @@ import {useUserStore} from "@/store";
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'authorization']);
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
-console.log(plotId,'--plotId')
+console.log(plotId, '--plotId')
 const depart_name = UserStore.user.plotName
 const departmental_date = ref([])
 
@@ -72,7 +72,7 @@ const handleNodeClick = (data: any) => {
 
 //初始化获取部门列表
 const handle_department = async (plotId: any) => {
-  const res = await actions_list( plotId)
+  const res = await actions_list(plotId)
   if (res.data.code === 200) {
     departmental_date.value = res.data.data
   }
@@ -80,7 +80,7 @@ const handle_department = async (plotId: any) => {
 
 
 onMounted(() => {
-  handle_department( plotId)//获取初始部门列表
+  handle_department(plotId)//获取初始部门列表
 
 })
 </script>
@@ -121,6 +121,7 @@ onMounted(() => {
       .name {
         display: flex;
         padding-left: 40px;
+
         .name_left {
           width: 20px;
           height: 20px;
@@ -131,6 +132,7 @@ onMounted(() => {
           justify-content: center; /* 添加此行 */
           align-items: center; /* 添加此行 */
         }
+
         .depart_name {
           padding-left: 10px;
         }
@@ -203,7 +205,8 @@ onMounted(() => {
     height: 20px;
   }
 }
-:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content)  {
+
+:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) {
   background-color: #FFEAEB !important;
   color: #D42A30;
 }

@@ -7,23 +7,26 @@
           {{ t('欢迎登录') }}
         </div>
         <div class="text_container">
-          <span :class="{ active: activeTab === 'password' }" @click="setActiveTab('password')">{{ t('密码登录') }}</span>
+          <span :class="{ active: activeTab === 'password' }" @click="setActiveTab('password')">{{
+              t('密码登录')
+            }}</span>
           <!--          <span :class="{ active: activeTab === 'verification' }" @click="setActiveTab('verification')">{{ t('验证码登录') }}</span>-->
 
         </div>
-        <div class="login_form" >
+        <div class="login_form">
           <el-form
               ref="login_ref"
               :model="loginParams"
+              :rules="rules"
               label-width="auto"
               style="max-width: 400px"
-              :rules="rules"
           >
             <el-form-item class="form_item" prop="username">
-              <el-input  @keyup.enter.native="submit_login"  :placeholder="t('请输入账号') " v-model="loginParams.username"></el-input>
+              <el-input v-model="loginParams.username" :placeholder="t('请输入账号') "
+                        @keyup.enter.native="submit_login"></el-input>
             </el-form-item>
-            <el-form-item class="form_item" prop="password" v-if="activeTab === 'password'">
-              <el-input show-password   :placeholder="t('请输入密码') " v-model="loginParams.password"></el-input>
+            <el-form-item v-if="activeTab === 'password'" class="form_item" prop="password">
+              <el-input v-model="loginParams.password" :placeholder="t('请输入密码') " show-password></el-input>
             </el-form-item>
             <!--            <el-form-item class="form_item" prop="code" v-if="activeTab !== 'password'">-->
             <!--              <el-input :placeholder="t('请输入验证码')" v-model="loginParams.code">-->
@@ -41,10 +44,11 @@
         </div>
         <div class="login_buttom">
           <el-button
-              @keyup="checkEnterKey"
-              @click="submit_login" class="button" type="primary">  {{ t('登录') }}</el-button>
+              class="button"
+              type="primary" @click="submit_login" @keyup="checkEnterKey"> {{ t('登录') }}
+          </el-button>
           <div class="tips">
-            {{ t('你还没有账号？点击') }}<span @click="register" class="tips_register">{{ t('注册') }}</span>
+            {{ t('你还没有账号？点击') }}<span class="tips_register" @click="register">{{ t('注册') }}</span>
           </div>
         </div>
 
@@ -54,20 +58,21 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import sha256 from 'sha256';
-import {useRoute,useRouter} from 'vue-router'
-import type { FormInstance, FormRules } from 'element-plus';
-import { useLocalesI18n } from '@/locales/i18n';
+import {useRoute, useRouter} from 'vue-router'
+import type {FormInstance, FormRules} from 'element-plus';
+import {useLocalesI18n} from '@/locales/i18n';
 import {validateMobile, validatePassword} from "@/utils/packagingmethod/rules";
-import { useUserStore } from '@/store';
+import {useUserStore} from '@/store';
 import {actions_login} from "@/api/login";
 import {message} from "@/utils/components/message";
 import md5 from "js-md5";
+
 const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
-const { t } = useLocalesI18n({}, [(locale: string) => import(`./lang/${locale}.json`), 'login']);
+const {t} = useLocalesI18n({}, [(locale: string) => import(`./lang/${locale}.json`), 'login']);
 const activeTab = ref('password');//默认密码登录
 const login_ref = ref<FormInstance>(); //拿到当前ref实力
 const countdown = ref<number>(0) //验证码倒计时
@@ -76,20 +81,22 @@ const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
 }
 const remember = ref<boolean>(false)
+
 interface RuleForm {
-  signature:string,
-  username:string,
-  clientType:number,
-  nonce:string,
-  password:string,
+  signature: string,
+  username: string,
+  clientType: number,
+  nonce: string,
+  password: string,
 
 }
+
 const loginParams = ref<RuleForm>({
-  username:'18111111111', //用户名
-  password:'a123456789',
-  signature:'',//密码
-  nonce:'',
-  clientType:1
+  username: '18111111111', //用户名
+  password: 'a123456789',
+  signature: '',//密码
+  nonce: '',
+  clientType: 1
 })
 
 const rules = computed<FormRules>(() => ({
@@ -99,27 +106,27 @@ const rules = computed<FormRules>(() => ({
       message: t('账号必须填写!'),
       trigger: 'blur',
     },
-    { validator: validateMobile, trigger: 'blur' }
+    {validator: validateMobile, trigger: 'blur'}
   ],
   password: [
     {
       required: true,
-      message: t('密码必须填写!') ,
+      message: t('密码必须填写!'),
       trigger: 'blur',
     },
-    { validator: validatePassword, trigger: 'blur' }
+    {validator: validatePassword, trigger: 'blur'}
   ],
   code: [
     {
       required: true,
-      message: t('验证码必须填写!') ,
+      message: t('验证码必须填写!'),
       trigger: 'blur',
     },
     // { validator: validatePassword, trigger: 'blur' }
   ],
 }));
 
-const checkEnterKey =(event)=>{
+const checkEnterKey = (event) => {
   if (event.keyCode === 13) {
     submit_login();
   }
@@ -130,7 +137,7 @@ const handle_forgot = async () => {
 
 }
 //登录
-const generateRandomNumberString = (length:any) => {
+const generateRandomNumberString = (length: any) => {
   let result = '';
   const characters = '0123456789';
   const charactersLength = characters.length;
@@ -141,22 +148,22 @@ const generateRandomNumberString = (length:any) => {
   return result;
 };
 const submit_login = async () => {
-  login_ref.value?.validate(async (valid:boolean, fields:any) => {
+  login_ref.value?.validate(async (valid: boolean, fields: any) => {
     if (valid) {
       let date = JSON.parse(JSON.stringify(loginParams.value))
       date.nonce = generateRandomNumberString(5)
       date.password = md5(date.password).toUpperCase()
-      let sha256_date = sha256(`${ date.username}:${date.password}`)
-      date.signature =sha256( `${sha256_date}:${ date.nonce}`) ;
+      let sha256_date = sha256(`${date.username}:${date.password}`)
+      date.signature = sha256(`${sha256_date}:${date.nonce}`);
       delete date.password
-      const res =await actions_login(date)
-      if (res.data.code ===200){
+      const res = await actions_login(date)
+      if (res.data.code === 200) {
         const date = res.data.data
         await userStore.login(date);  //这里点击登录  username password ;captcha 三个参数
-        await  message(t('登录成功'), {type: "success"})
+        await message(t('登录成功'), {type: "success"})
         await router.replace((route.query.redirect as string) || '/');
-      }else  {
-        await  message(res.data.message, {type: "error"})
+      } else {
+        await message(res.data.message, {type: "error"})
       }
 
     } else {
@@ -166,7 +173,7 @@ const submit_login = async () => {
 };
 //获取验证码
 const getCode = () => {
-  let timer:any = null;
+  let timer: any = null;
   countdown.value = 60;
   clearInterval(timer); // 清除之前的定时器
   timer = setInterval(() => {
@@ -178,15 +185,15 @@ const getCode = () => {
 };
 //点击注册
 const register = async () => {
-  await router.replace( '/register');
+  await router.replace('/register');
 
 }
-onMounted(async()=>{
-  window.addEventListener('keyup',checkEnterKey);
+onMounted(async () => {
+  window.addEventListener('keyup', checkEnterKey);
 
 })
-onBeforeMount(()=>{
-  window.addEventListener('keyup',checkEnterKey);
+onBeforeMount(() => {
+  window.addEventListener('keyup', checkEnterKey);
 
 })
 
@@ -222,6 +229,7 @@ onBeforeMount(()=>{
         font-weight: 600;
         margin-bottom: 30px;
       }
+
       .text_container {
         margin-bottom: 20px;
         display: flex;
@@ -231,6 +239,7 @@ onBeforeMount(()=>{
         font-weight: 400;
         padding-bottom: 6px;
         cursor: pointer;
+
         span {
           margin: 0 10px; /* 可以调整文字之间的间距 */
           cursor: pointer;
@@ -253,39 +262,47 @@ onBeforeMount(()=>{
           }
         }
       }
+
       .login_form {
         margin-left: 35px;
+
         .form_item {
           margin-bottom: 25px;
         }
+
         .login_form_buttom {
           display: flex;
           justify-content: space-between;
           margin-top: 10px;
           width: 400px;
+
           .Forgot {
             margin-top: 10px;
             //font-weight: 700;
-            color:rgb(34, 40, 224);
+            color: rgb(34, 40, 224);
             cursor: pointer;
 
           }
         }
       }
+
       .login_buttom {
         display: flex;
         flex-direction: column;
         align-items: center;
         //width: 400px;
-        margin:30px 0 0  0;
+        margin: 30px 0 0 0;
+
         .button {
           width: 400px;
           background-color: rgb(34, 40, 224);
         }
+
         .tips {
           margin-top: 10px;
+
           .tips_register {
-            color:rgb(74, 84, 237) ;
+            color: rgb(74, 84, 237);
             cursor: pointer;
 
           }

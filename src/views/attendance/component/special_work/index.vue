@@ -2,9 +2,9 @@
   <div>
     <el-dialog
         v-model="dialog_visible"
-        width="700"
         :before-close="handle_close"
         class="dialog_css"
+        width="700"
     >
       <template #header>
         <div class="dialog_header">
@@ -12,11 +12,11 @@
         </div>
         <div class="dialog_buttom"></div>
       </template>
-      <el-form :model="date_form" class="form"   label-width="auto" style="max-width: 600px">
-        <el-form-item v-for="(item, index) in date_form"  :key="index" :label="`日期 ${index + 1}`" prop="value">
-          <el-date-picker v-model="item.value" type="date" value-format="x" :placeholder="t('请选择日期')" />
-          <me-icon-plus_sign v-if="index === date_form.length - 1" class="form_icon" @click="handle_add_picker" />
-          <me-icon-minus_sign class="form_minus" v-if="date_form.length > 1" @click="handle_minus_picker(index)" />
+      <el-form :model="date_form" class="form" label-width="auto" style="max-width: 600px">
+        <el-form-item v-for="(item, index) in date_form" :key="index" :label="`日期 ${index + 1}`" prop="value">
+          <el-date-picker v-model="item.value" :placeholder="t('请选择日期')" type="date" value-format="x"/>
+          <me-icon-plus_sign v-if="index === date_form.length - 1" class="form_icon" @click="handle_add_picker"/>
+          <me-icon-minus_sign v-if="date_form.length > 1" class="form_minus" @click="handle_minus_picker(index)"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -29,17 +29,15 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import {  defineProps, PropType, ref, watch } from "vue";
-import { useLocalesI18n } from "@/locales/hooks";
-import { defineEmits } from "vue";
-import { FormRules } from "element-plus";
+<script lang="ts" setup>
+import {defineEmits, defineProps, PropType, ref, watch} from "vue";
+import {useLocalesI18n} from "@/locales/hooks";
 
-const { t } = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}.json`), 'person_table']);
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}.json`), 'person_table']);
 
 const dialog_visible = ref(false);
 const date_form = ref([
-  { value: "" }
+  {value: ""}
 ]);
 
 const props = defineProps({
@@ -47,13 +45,13 @@ const props = defineProps({
     type: Boolean as PropType<boolean>,
     default: false,
   },
-  status:{
+  status: {
     type: String as PropType<string>,
     default: '',
   },
-  data:{
+  data: {
     type: Array as PropType<any>,
-    default:[],
+    default: [],
   }
 
 });
@@ -64,7 +62,7 @@ const timestamps = ref<Array<number>>([]);
 const handle_close = () => {
   console.log("取消");
   dialog_visible.value = false;
-  date_form.value = [{ value: "" }]
+  date_form.value = [{value: ""}]
   emit("check_dialog", dialog_visible.value, "cancel");
 };
 
@@ -76,19 +74,19 @@ const handle_save = () => {
   console.log(timestamps.value, '--timestamps.value');
   console.log("确认");
   dialog_visible.value = false;
-  emit("check_dialog", dialog_visible.value, "confirm",timestamps.value);
+  emit("check_dialog", dialog_visible.value, "confirm", timestamps.value);
 };
 
 const handle_add_picker = () => {
   console.log("添加日期");
-  date_form.value.push({ value: "" });
+  date_form.value.push({value: ""});
 };
 
 const handle_minus_picker = (index: number) => {
   console.log("删除日期");
   date_form.value.splice(index, 1);
 };
-onMounted(()=>{
+onMounted(() => {
   //编辑的时候这个方法走的通
   // timestamps.value = [1715270400000,1715443200000]
   // date_form.value = timestamps.value.map((timestamp) => {
@@ -101,19 +99,19 @@ onMounted(()=>{
   // });
 })
 watch(
-   [ () => props.check_dialog,()=>props.status,()=>props.data],
-    ([newVal,newStatus,newData]) => {
+    [() => props.check_dialog, () => props.status, () => props.data],
+    ([newVal, newStatus, newData]) => {
       dialog_visible.value = newVal;
-      console.log(newData,'--newData')
-      if (newStatus ==='add'){
-        date_form.value = [{ value: "" }]
-      }else {
-        console.log(date_form.value.length,'--date_form.value')
-        if (  date_form.value.length === 0){
+      console.log(newData, '--newData')
+      if (newStatus === 'add') {
+        date_form.value = [{value: ""}]
+      } else {
+        console.log(date_form.value.length, '--date_form.value')
+        if (date_form.value.length === 0) {
           console.log('走这里了吗')
           handle_add_picker()
-        }else {
-          date_form.value =  newData.map(item => ({ value: item }));
+        } else {
+          date_form.value = newData.map(item => ({value: item}));
 
         }
       }
@@ -123,13 +121,14 @@ watch(
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .dialog_css {
   .dialog_header {
     font-size: 18px;
     color: #333333;
     width: 100%;
   }
+
   .dialog_buttom {
     height: 1px;
     border: 1px solid #A3A6AD;
@@ -137,13 +136,16 @@ watch(
     width: 680px;
 
   }
+
   .form {
     padding-top: 30px;
+
     .form_icon {
       padding: 0 20px 0 10px;
     }
+
     .form_minus {
-      padding-left: 10px ;
+      padding-left: 10px;
     }
   }
 

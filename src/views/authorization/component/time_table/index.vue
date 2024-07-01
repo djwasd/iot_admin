@@ -1,71 +1,64 @@
-
 <template>
-<div>
-  <el-table
-      :data="table_data"
-      style="width: 100%"
-      @selection-change="handleSelectionChange"
-      class="table"
-      ref="table_ref"
-  >
-    <el-table-column class="table_column" type="selection" width="30" />
-    <el-table-column prop="week" :label="t('工作日')" width="80" >
-      <template #default="{ row }">
-        {{ getWeekLabel(row) }}
-      </template>
-    </el-table-column>
-    <el-table-column prop="startTime" :label="t('开始时间')" width="120" >
-      <template #default="{ row, $index }">
-        <template v-if="start_row === $index">
-          <el-time-picker
-              style="width: 100px"
-              :clearable="false"
-              v-model="row.startTime"
-              @change="handle_time_change(row, 'startTime', $event)"
-          ></el-time-picker>
+  <div>
+    <el-table
+        ref="table_ref"
+        :data="table_data"
+        class="table"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+    >
+      <el-table-column class="table_column" type="selection" width="30"/>
+      <el-table-column :label="t('工作日')" prop="week" width="80">
+        <template #default="{ row }">
+          {{ getWeekLabel(row) }}
         </template>
-        <template v-else>
-          {{ formatstartTime(row) }}
+      </el-table-column>
+      <el-table-column :label="t('开始时间')" prop="startTime" width="120">
+        <template #default="{ row, $index }">
+          <template v-if="start_row === $index">
+            <el-time-picker
+                v-model="row.startTime"
+                :clearable="false"
+                style="width: 100px"
+                @change="handle_time_change(row, 'startTime', $event)"
+            ></el-time-picker>
+          </template>
+          <template v-else>
+            {{ formatstartTime(row) }}
+          </template>
         </template>
-      </template>
-    </el-table-column>
-    <el-table-column prop="endTime" :label="t('结束时间')" width="120" >
-      <template #default="{ row,$index}">
-        <template v-if="end_row === $index">
-          <el-time-picker
-              style="width: 100px"
-              :clearable="false"
-              v-model="row.endTime"
-              @change="handle_time_change(row, 'endTime', $event)"
-          ></el-time-picker>
+      </el-table-column>
+      <el-table-column :label="t('结束时间')" prop="endTime" width="120">
+        <template #default="{ row,$index}">
+          <template v-if="end_row === $index">
+            <el-time-picker
+                v-model="row.endTime"
+                :clearable="false"
+                style="width: 100px"
+                @change="handle_time_change(row, 'endTime', $event)"
+            ></el-time-picker>
+          </template>
+          <template v-else>
+            {{ formatendTime(row) }}
+          </template>
         </template>
-        <template v-else>
-          {{ formatendTime(row) }}
+      </el-table-column>
+      <el-table-column :label="t('操作')" fixed="right" width="120">
+        <template #default="{row,$index}">
+          <el-button link size="small" type="primary" @click="handle_edit(row,$index)">{{ t('更改') }}</el-button>
+          <el-button link size="small" type="primary" @click="handle_cancel(row,$index)">{{ $t('取消') }}</el-button>
         </template>
-      </template>
-    </el-table-column>
-    <el-table-column fixed="right"  :label="t('操作')" width="120">
-      <template #default="{row,$index}" >
-          <el-button  link type="primary" size="small" @click="handle_edit(row,$index)" >{{t('更改')}}</el-button>
-          <el-button  link type="primary" size="small" @click="handle_cancel(row,$index)" >{{$t('取消')}}</el-button>
-      </template>
 
-    </el-table-column>
+      </el-table-column>
 
-  </el-table>
+    </el-table>
 
-</div>
+  </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {useLocalesI18n} from "@/locales/hooks";
-import {
-  formatstartTime,
-  formatendTime,
-  timeToTimestamp,
-  convertArrayToTimestamps,
-  replaceItem, findDifferentItems
-} from "@/utils/packagingmethod/time";
+import {convertArrayToTimestamps, formatendTime, formatstartTime, replaceItem} from "@/utils/packagingmethod/time";
 import {message} from "@/utils/components/message";
 
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'attendance']);
@@ -78,15 +71,16 @@ interface User {
   startTime: number
   endTime: number
 }
+
 const value1 = ref<HTMLElement | null>(null)
 const props = defineProps({  //父组件爱你传递过来的弹框状态
 
-  traverStatus:{
-    type:  String as PropType<string>,
+  traverStatus: {
+    type: String as PropType<string>,
     default: ''
   },
-  edit_data:{
-    type:  Array as PropType<any>,
+  edit_data: {
+    type: Array as PropType<any>,
     default: []
   }
 })
@@ -94,42 +88,42 @@ const emit = defineEmits();   //定义子组件传递方法
 
 const tableData =
     [
-  {
-    startTime: 1704038400000,
-    week: 'MONDAY',
-    endTime: 2082643199999,
-  },
-  {
-    startTime: 1704038400000,
-    week: 'TUESDAY',
-    endTime: 2082643199999,
-  },
-  {
-    startTime: 1704038400000,
-    week: 'WEDNESDAY',
-    endTime: 2082643199999,
-  },
-  {
-    startTime: 1704038400000,
-    week: 'THURSDAY',
-    endTime: 2082643199999,
-  },
-  {
-    startTime: 1704038400000,
-    week: 'FRIDAY',
-    endTime: 2082643199999,
-  },
-  {
-    startTime: 1704038400000,
-    week: 'SATURDAY',
-    endTime: 2082643199999,
-  },
-  {
-    startTime: 1704038400000,
-    week: 'SUNDAY',
-    endTime: 2082643199999,
-  },
-]
+      {
+        startTime: 1704038400000,
+        week: 'MONDAY',
+        endTime: 2082643199999,
+      },
+      {
+        startTime: 1704038400000,
+        week: 'TUESDAY',
+        endTime: 2082643199999,
+      },
+      {
+        startTime: 1704038400000,
+        week: 'WEDNESDAY',
+        endTime: 2082643199999,
+      },
+      {
+        startTime: 1704038400000,
+        week: 'THURSDAY',
+        endTime: 2082643199999,
+      },
+      {
+        startTime: 1704038400000,
+        week: 'FRIDAY',
+        endTime: 2082643199999,
+      },
+      {
+        startTime: 1704038400000,
+        week: 'SATURDAY',
+        endTime: 2082643199999,
+      },
+      {
+        startTime: 1704038400000,
+        week: 'SUNDAY',
+        endTime: 2082643199999,
+      },
+    ]
 const table_data = ref(
     [
       {
@@ -168,8 +162,8 @@ const table_data = ref(
         endTime: 2082643199999,
       },
     ])
-const newList =ref([])
-const getWeekLabel = (row:object) => {
+const newList = ref([])
+const getWeekLabel = (row: object) => {
   switch (row.week) {
     case 'MONDAY':
       return t('周一');
@@ -193,40 +187,40 @@ const getWeekLabel = (row:object) => {
 const multipleSelection = ref<User[]>([])
 
 const handleSelectionChange = (val: User[]) => {
-  console.log(val,'---val---------------')
-  if (val.length !==0){
+  console.log(val, '---val---------------')
+  if (val.length !== 0) {
     const itemWithInvalidTime = val.find(item => item.startTime >= item.endTime);
-    if (itemWithInvalidTime){
-      return message(t('开始时间不能大于结束时间'),{type:'error'})
+    if (itemWithInvalidTime) {
+      return message(t('开始时间不能大于结束时间'), {type: 'error'})
     }
     multipleSelection.value = val
 
-    console.log( multipleSelection.value,'-- multipleSelection.value')
-    emit("save_time", multipleSelection.value,'save');
+    console.log(multipleSelection.value, '-- multipleSelection.value')
+    emit("save_time", multipleSelection.value, 'save');
   }
 
 
 }
 //修改当前行
-const handle_edit = (row:any,index:any)=>{
+const handle_edit = (row: any, index: any) => {
   start_row.value = index
-  end_row.value=index
+  end_row.value = index
   change_flag.value = false
-  console.log('点击更改',row,index)
+  console.log('点击更改', row, index)
 }
 //取消当前行的修改
-const handle_cancel = (row:any,index:any)=>{
-  if (start_row.value === index ||  end_row.value === index){
+const handle_cancel = (row: any, index: any) => {
+  if (start_row.value === index || end_row.value === index) {
     console.log('取消')
     start_row.value = -1
-    end_row.value= -1
+    end_row.value = -1
     change_flag.value = true
-  }else  {
+  } else {
     console.log('不是当前行的点击')
   }
 
 }
-const handle_time_change = (row:any, field:string, value:any)=>{
+const handle_time_change = (row: any, field: string, value: any) => {
 
   console.log(row)
   console.log(field)
@@ -234,51 +228,51 @@ const handle_time_change = (row:any, field:string, value:any)=>{
   if (field === 'startTime') {
     row[field] = value.getTime();
     start_row.value = -1
-  }else {
+  } else {
     row[field] = value.getTime();
     end_row.value = -1
   }
-  console.log(row,'--row')
+  console.log(row, '--row')
 }
 
 
 watch(
-    [() => props.traverStatus,()=>props.edit_data],
-    async ([new_status,new_edit_data]) => {
-      console.log(new_status,'--new_status')
-      console.log(new_edit_data,'--new_edit_data')
-      if (new_status ==='add'){
+    [() => props.traverStatus, () => props.edit_data],
+    async ([new_status, new_edit_data]) => {
+      console.log(new_status, '--new_status')
+      console.log(new_edit_data, '--new_edit_data')
+      if (new_status === 'add') {
         table_data.value = JSON.parse(JSON.stringify(tableData))
-      }else {
-        if (new_edit_data.type === 1){
+      } else {
+        if (new_edit_data.type === 1) {
           table_data.value = JSON.parse(JSON.stringify(tableData))
 
-        }else {
-          if (new_edit_data.length ===0){
+        } else {
+          if (new_edit_data.length === 0) {
             console.log('走这里了吗')
             table_data.value = JSON.parse(JSON.stringify(tableData))
 
-          }else {
-            table_data.value =   convertArrayToTimestamps(new_edit_data);
-            table_data.value = replaceItem(tableData,table_data.value)
+          } else {
+            table_data.value = convertArrayToTimestamps(new_edit_data);
+            table_data.value = replaceItem(tableData, table_data.value)
           }
         }
-
 
 
       }
 
     },
-    { immediate: true }
+    {immediate: true}
 );
 
 </script>
 
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .table {
 }
-:deep(.el-table tr ){
+
+:deep(.el-table tr ) {
   height: 30px !important;
 }
 

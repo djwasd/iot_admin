@@ -26,7 +26,7 @@
             <el-button type="primary" @click="handle_add_list">{{ t('添加访客') }}</el-button>
           </el-form-item>
           <el-form-item class="form_item">
-            <el-button  @click="handle_deletion">{{ t('批量删除') }}</el-button>
+            <el-button @click="handle_deletion">{{ t('批量删除') }}</el-button>
           </el-form-item>
           <!--          <el-form-item class="form_item" >-->
           <!--            <el-button >{{t('重置')}}</el-button>-->
@@ -46,9 +46,9 @@
 
       >
         <el-table-column
+            :reserve-selection="true"
             fixed
             type="selection"
-            :reserve-selection="true"
             width="55"
         />
         <el-table-column
@@ -65,21 +65,21 @@
         <el-table-column :label="t('通行照片')" prop="visitorFacePicture">
           <template #default="{ row }">
             <el-image
-                style="width: 30px; height: 30px"
-                :src="git_pic(row)"
-                :zoom-rate="1.2"
                 :max-scale="7"
                 :min-scale="0.2"
-                fit="cover"
-                :preview-teleported="true"
                 :preview-src-list="[git_pic(row)]"
+                :preview-teleported="true"
+                :src="git_pic(row)"
+                :zoom-rate="1.2"
+                fit="cover"
+                style="width: 30px; height: 30px"
             >
             </el-image>
           </template>
         </el-table-column>
         <el-table-column :label="t('申请时间')" prop="applyTimestamp">
           <template #default="{ row }">
-            {{format_data(row.applyTimestamp)}}
+            {{ format_data(row.applyTimestamp) }}
           </template>
         </el-table-column>
         <el-table-column :label="t('操作')" fixed="right" width="200">
@@ -101,22 +101,21 @@
       />
 
     </div>
-    <drawer :list_dia="drawer_flag"
+    <drawer :editDate="edit_data"
+            :list_dia="drawer_flag"
             :show_status="status_flag"
             @save_list="handle_save_list"
-            :editDate="edit_data"
     ></drawer>
   </div>
 </template>
 
 
 <script lang="ts" setup>
-import drawer from  './component/drawer.vue'
+import drawer from './component/drawer.vue'
 import {useLocalesI18n} from "@/locales/hooks";
 import {useUserStore} from "@/store";
 import {action_add, action_del, visit_list} from "@/api/visitor";
 import {message} from "@/utils/components/message";
-import {upload_person} from "@/api/glob";
 import no_pic from "@/assets/images/png/no_pic.png";
 import {format_data} from "@/utils/packagingmethod/time";
 
@@ -146,33 +145,33 @@ const visit_data = ref({
 })
 const multipleSelection = ref([]) //选中的人数 可以考虑只传id
 const drawer_flag = ref<boolean>(false)
-const status_flag =ref('')
+const status_flag = ref('')
 const edit_data = ref({})
 //添加访客
-const handle_add_list = ()=>{
+const handle_add_list = () => {
   status_flag.value = 'add'
   drawer_flag.value = true
 }
-const handle_save_list =(flag:boolean,status:string,data:any)=>{
+const handle_save_list = (flag: boolean, status: string, data: any) => {
   drawer_flag.value = flag
-  if (status==='cancel') return true
-  if ( status_flag.value ==='add'){
+  if (status === 'cancel') return true
+  if (status_flag.value === 'add') {
     add_action(data)
   }
   status_flag.value = ''
 }
 //获取table照片
-const git_pic =  (row:any) => {
+const git_pic = (row: any) => {
   if (row.visitorFacePicture) {
     // const res =  upload_person(row.visitorFacePicture);
     const ipAddress = window.location.host;
-    const url =  `http://${ipAddress}/operation/cloud/web/sys/api/v1/attachment/actions/download?file_id=${row.visitorFacePicture}`;
-    return  url
+    const url = `http://${ipAddress}/operation/cloud/web/sys/api/v1/attachment/actions/download?file_id=${row.visitorFacePicture}`;
+    return url
   }
   return no_pic;
 };
 
-const handle_details = (row:any)=>{
+const handle_details = (row: any) => {
   edit_data.value = row
   status_flag.value = 'edit'
   drawer_flag.value = true
@@ -188,7 +187,7 @@ const set_index = (index: number) => {
 }
 const handleCurrentChange = async (val: number) => {
   current_page.value = val;
-  await   visit_all(plotId,current_page.value, page_size.value)
+  await visit_all(plotId, current_page.value, page_size.value)
 
 };
 const handleSelectionChange = (val: any) => {
@@ -248,7 +247,7 @@ const del_action = async (ids: any) => {
     ids: ids
   })
   if (res.data.code === 200) {
-    await   visit_all(plotId,current_page.value, page_size.value)
+    await visit_all(plotId, current_page.value, page_size.value)
     message(t('删除成功'), {type: "success"})
   } else {
     message(res.data.message, {type: 'error'})
@@ -257,7 +256,7 @@ const del_action = async (ids: any) => {
 const add_action = async (data: any) => {
   const res = await action_add(data)
   if (res.data.code === 200) {
-    await   visit_all(plotId,current_page.value, page_size.value)
+    await visit_all(plotId, current_page.value, page_size.value)
 
     message(t('添加成功'), {type: "success"})
   } else {
@@ -266,7 +265,7 @@ const add_action = async (data: any) => {
 }
 //获取列表数据
 
-const visit_all = async (plotId:number,page: number, size: number, visitName?: string, intervieweeName?: string, attendanceStartTimestamp?: number, attendanceEndTimestamp?: number) => {
+const visit_all = async (plotId: number, page: number, size: number, visitName?: string, intervieweeName?: string, attendanceStartTimestamp?: number, attendanceEndTimestamp?: number) => {
   const res = await visit_list(
       plotId,
       page,
@@ -281,7 +280,7 @@ const visit_all = async (plotId:number,page: number, size: number, visitName?: s
   }
 }
 onMounted(() => {
-  visit_all(plotId,current_page.value, page_size.value)
+  visit_all(plotId, current_page.value, page_size.value)
 })
 
 </script>

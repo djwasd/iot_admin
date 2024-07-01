@@ -2,7 +2,7 @@
   <el-card class="top_content">
     <div class="title">今日考勤</div>
     <div class="content">
-      <mEcharts class="echarts" :options="state.options" :height="state.height" :width="state.width"></mEcharts>
+      <mEcharts :height="state.height" :options="state.options" :width="state.width" class="echarts"></mEcharts>
       <!--      <div class="content_left">左边</div>-->
       <div class="content_right">
         <div class="Below">
@@ -28,13 +28,15 @@
 
 </template>
 
-<script setup lang="ts" name="top_content">
-import  mEcharts from '@/common/echartsCustom/EchartsCustom.vue'
-import {reactive, shallowReactive} from "vue";
+<script lang="ts" name="top_content" setup>
+import mEcharts from '@/common/echartsCustom/EchartsCustom.vue'
+import {shallowReactive} from "vue";
+import {CountTo} from 'vue3-count-to';
+
 const state = shallowReactive({
-  height:'160px',
-  width:'160px',
-  options : {
+  height: '160px',
+  width: '160px',
+  options: {
     tooltip: {
       trigger: 'item'
     },
@@ -60,18 +62,18 @@ const state = shallowReactive({
           show: false
         },
         data: [
-          { value: 1048, name: '已打卡' },
-          { value: 735, name: '未打卡' },
-          { value: 580, name: '迟到' },
-          { value: 484, name: '早退' },
-          { value: 300, name: '异常考勤' },
-          { value: 300, name: '抽烟' }
+          {value: 1048, name: '已打卡'},
+          {value: 735, name: '未打卡'},
+          {value: 580, name: '迟到'},
+          {value: 484, name: '早退'},
+          {value: 300, name: '异常考勤'},
+          {value: 300, name: '抽烟'}
         ]
       }
     ]
   }
 })
-import {CountTo} from 'vue3-count-to';
+
 const buttons = ref([
   {label: '已打卡', endVal: 80475, backgroundColor: '#3B81F4 '},
   {label: '未打卡', endVal: 19935, backgroundColor: '#FF8F1F'},
@@ -82,7 +84,7 @@ const buttons = ref([
 ])
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .top_content {
   width: 100%;
   height: 260px;
@@ -116,7 +118,8 @@ const buttons = ref([
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start; /* 垂直对齐方式设置为顶部对齐 */
-   margin-top: 20px;
+    margin-top: 20px;
+
     .buttom {
       align-items: center;
       width: 90px;

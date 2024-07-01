@@ -11,12 +11,12 @@
     </div>
 
     <div class="main">
-      <div class="conter" ref="box">
+      <div ref="box" class="conter">
         <el-row :gutter="10">
-          <el-col v-for="(n, index) in state.fornum" :key="index" :xs="24" :sm="24" :md="state.clonum"
-                  :lg="state.clonum" :xl="state.clonum" :class="state.videoclass">
-            <div class="player-wrapper" element-loading-text="加载中..." element-loading-background="#000">
-              <div class="video-wrapper" :style="state.videoclass" :id="`videoid${n}`">
+          <el-col v-for="(n, index) in state.fornum" :key="index" :class="state.videoclass" :lg="state.clonum" :md="state.clonum"
+                  :sm="24" :xl="state.clonum" :xs="24">
+            <div class="player-wrapper" element-loading-background="#000" element-loading-text="加载中...">
+              <div :id="`videoid${n}`" :style="state.videoclass" class="video-wrapper">
                 <div class="video-inner live hide-waiting"
                      style="position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px;">
                   <div class="alt">
@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import {reactive} from 'vue'
 
 const state = reactive({
   fullscreen: false,
@@ -55,6 +55,7 @@ const state = reactive({
   classtype5: "",
   items: [false, false, false, false],
 });
+
 function selecttype(item, fnum, clo) {
   state.items = [];
   for (let i = 0; i < fnum; i++) {
@@ -68,29 +69,25 @@ function selecttype(item, fnum, clo) {
     state.classtype3 = "";
     state.classtype4 = "";
     state.classtype5 = "";
-  }
-  else if (item === "classtype2") {
+  } else if (item === "classtype2") {
     state.classtype1 = "";
     state.classtype2 = "primary";
     state.classtype3 = "";
     state.classtype4 = "";
     state.classtype5 = "";
-  }
-  else if (item === "classtype3") {
+  } else if (item === "classtype3") {
     state.classtype1 = "";
     state.classtype2 = "";
     state.classtype3 = "primary";
     state.classtype4 = "";
     state.classtype5 = "";
-  }
-  else if (item === "classtype4") {
+  } else if (item === "classtype4") {
     state.classtype1 = "";
     state.classtype2 = "";
     state.classtype3 = "";
     state.classtype4 = "primary";
     state.classtype5 = "";
-  }
-  else if (item === "classtype5") {
+  } else if (item === "classtype5") {
     state.classtype1 = "";
     state.classtype2 = "";
     state.classtype3 = "";
@@ -179,7 +176,8 @@ body {
 .player-wrapper {
   padding-bottom: 5px;
 }
-:deep(.el-button+.el-button ){
+
+:deep(.el-button+.el-button ) {
   margin-left: 0;
 }
 </style>

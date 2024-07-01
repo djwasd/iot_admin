@@ -3,11 +3,11 @@
 
     <div class="grid-item">
       <div class="main">
-        <div class="conter" ref="box" style="height:100%;">
+        <div ref="box" class="conter" style="height:100%;">
           <el-row :gutter="10" style="    height: 100%;">
-            <el-col v-for="(n, index) in state.fornum" :key="index" :xs="24" :sm="24" :md="state.clonum"
-                    :lg="state.clonum" :xl="state.clonum" :class="state.videoclass" style="padding:2px">
-              <div class="video-wrapper" :style="state.videoclass" :id="`videoid${n}`">
+            <el-col v-for="(n, index) in state.fornum" :key="index" :class="state.videoclass" :lg="state.clonum" :md="state.clonum"
+                    :sm="24" :xl="state.clonum" :xs="24" style="padding:2px">
+              <div :id="`videoid${n}`" :style="state.videoclass" class="video-wrapper">
                 <div class="video-inner live hide-waiting"
                      style="">
                   <div class="alt">
@@ -29,12 +29,12 @@
       </div>
     </div>
     <div class="bottom-box">
-      <div class="icons-container"  >
+      <div class="icons-container">
 
         <img
-            :src="item.icon"
             v-for="(item, index) in icons"
             :key="item.id"
+            :src="item.icon"
             class="icon"
             @click="handleIconClick(item)"
         />
@@ -45,19 +45,20 @@
     </div>
   </div>
 </template>
-<script setup >
-import { ref,reactive  } from "vue";
+<script setup>
+import {reactive, ref} from "vue";
 import blue_first from '@/assets/images/png/blue_first.png';
 import blue_four from '@/assets/images/png/blue_first.png';
-import blue_nine from'@/assets/images/png/blue_first.png';
+import blue_nine from '@/assets/images/png/blue_first.png';
 import first from '@/assets/images/png/blue_first.png';
 import four from '@/assets/images/png/blue_first.png';
 import nine from '@/assets/images/png/blue_first.png';
+
 const num = ref(1)
 const icons = ref([
-  { icon: blue_first, id: 1, active: false, image: blue_first, originalIcon: first,clo:24 },
-  { icon: four, id: 4, active: false, image: blue_four, originalIcon: four,clo:12 },
-  { icon: nine, id: 9, active: false, image: blue_nine, originalIcon: nine,clo:8 },//16分屏clo6 36分屏clo4
+  {icon: blue_first, id: 1, active: false, image: blue_first, originalIcon: first, clo: 24},
+  {icon: four, id: 4, active: false, image: blue_four, originalIcon: four, clo: 12},
+  {icon: nine, id: 9, active: false, image: blue_nine, originalIcon: nine, clo: 8},//16分屏clo6 36分屏clo4
 ]);
 const state = reactive({
   fullscreen: false,
@@ -87,11 +88,12 @@ const handleIconClick = (item) => {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 
 .container_top {
   height: 98vh;
   position: relative;
+
   .grid-item {
     height: calc(100% - 50px);
     // height: 94%;
@@ -107,13 +109,15 @@ const handleIconClick = (item) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     .icons-container {
       .icon {
-        padding:10px 0 0 20px;
+        padding: 10px 0 0 20px;
         cursor: pointer;
         width: 30px;
       }
     }
+
     .screen-icon-container {
       display: flex;
       align-items: center;

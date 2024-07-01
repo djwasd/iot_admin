@@ -1,6 +1,6 @@
 <template>
   <div class="person">
-    <div class="device">{{t('设备管理')}}</div>
+    <div class="device">{{ t('设备管理') }}</div>
     <div class="function">
       <div class="function_left">
         <el-button type="primary" @click="handle_add">{{ t('添加设备') }}</el-button>
@@ -27,9 +27,9 @@
       <el-table
           ref="multipleTableRef"
           :data="device_list.records"
+          :row-key="getRowKey"
           style="width: 100%"
           @selection-change="handleSelectionChange"
-          :row-key="getRowKey"
 
       >
         <el-table-column
@@ -43,20 +43,20 @@
             type="index"
             width="80">
         </el-table-column>
-        <el-table-column prop="deviceName" show-overflow-tooltip :label="t('设备')+t('名称')" />
-        <el-table-column prop="serialNo" show-overflow-tooltip :label="t('设备序列号')" />
-        <el-table-column prop="address"  show-overflow-tooltip :label="t('设备位置')" />
-        <el-table-column prop="address" show-overflow-tooltip :label="t('设备状态')" >
+        <el-table-column :label="t('设备')+t('名称')" prop="deviceName" show-overflow-tooltip/>
+        <el-table-column :label="t('设备序列号')" prop="serialNo" show-overflow-tooltip/>
+        <el-table-column :label="t('设备位置')" prop="address" show-overflow-tooltip/>
+        <el-table-column :label="t('设备状态')" prop="address" show-overflow-tooltip>
           <template #default="{row}">
-            {{row.status ==='online'?t('在线'):t('离线')}}
+            {{ row.status === 'online' ? t('在线') : t('离线') }}
 
           </template>
 
         </el-table-column>
 
-        <el-table-column fixed="right" :label="t('操作')" width="340">
+        <el-table-column :label="t('操作')" fixed="right" width="340">
           <template #default="{row}">
-            <el-button link size="small"  type="primary" @click="handle_edit(row)">{{ t('编辑') }}</el-button>
+            <el-button link size="small" type="primary" @click="handle_edit(row)">{{ t('编辑') }}</el-button>
             <el-button link size="small" type="primary" @click="handle_del(row)"> {{ t('删除') }}</el-button>
             <el-button link size="small" type="primary" @click="handle_upgrade"> {{ t('升级') }}</el-button>
             <el-button link size="small" type="primary" @click="handle_restart"> {{ t('重启') }}</el-button>
@@ -71,8 +71,8 @@
       <el-pagination
           v-model:current-page="current_page"
           v-model:page-size="page_size"
-          layout="prev, pager, next, jumper"
           :total="device_list.total"
+          layout="prev, pager, next, jumper"
           @current-change="handleCurrentChange"
       />
 
@@ -106,13 +106,14 @@
                 :class="{ 'small-box': true, active: item.isActive }"
                 @click="item.disabled ? null : highlight_box(item.id)"
             >
-              <component :is="item.icon" class="icon" />{{ item.label }}
+              <component :is="item.icon" class="icon"/>
+              {{ item.label }}
             </div>
           </div>
 
         </el-form-item>
         <el-form-item :label="t('设备序列号')" prop="serialNo">
-          <el-input :disabled="device_status==='edit'" v-model="rule_form.serialNo"/>
+          <el-input v-model="rule_form.serialNo" :disabled="device_status==='edit'"/>
         </el-form-item>
         <el-form-item :label="t('设备名称')" prop="deviceName">
           <el-input v-model="rule_form.deviceName"/>
@@ -156,28 +157,29 @@ interface RuleForm {
   serialNo: string
   deviceName: string,
   address: string
-  deviceType:string,
+  deviceType: string,
 
 }
+
 const rule_form_data = ref<RuleForm>({
   serialNo: '',
   deviceName: '',
   address: '',
-  deviceType:'',
-  plotId:plotId
+  deviceType: '',
+  plotId: plotId
 })
 const rule_form = ref<RuleForm>({
   serialNo: '',
   deviceName: '',
   address: '',
-  deviceType:'',
-  plotId:plotId
+  deviceType: '',
+  plotId: plotId
 
 })
 const equipment_type = ref('Face')
 const device_list = ref({
-  records:[],
-  total:0
+  records: [],
+  total: 0
 })
 
 //dialog表单校验
@@ -194,17 +196,24 @@ const rules = computed<FormRules>(() => ({
   ],
 }));
 const box_items = ref([
-  { label: '网络摄像机', value: "device/master/IPC", isActive: false, id: 0, icon: 'me-icon-IPC', disabled: false },
-  { label: '录像机', value: "device/master/NvR", isActive: false, id: 1, icon: 'me-icon-IPC', disabled: false },
-  { label: '人脸识别终端', value: "device/master/AccessController", isActive: false, id: 2, icon: 'me-icon-phone', disabled: false },
-  { label: '网关', value: "device/master/vbox", isActive: false, id:3, icon: 'me-icon-phone', disabled: false },
+  {label: '网络摄像机', value: "device/master/IPC", isActive: false, id: 0, icon: 'me-icon-IPC', disabled: false},
+  {label: '录像机', value: "device/master/NvR", isActive: false, id: 1, icon: 'me-icon-IPC', disabled: false},
+  {
+    label: '人脸识别终端',
+    value: "device/master/AccessController",
+    isActive: false,
+    id: 2,
+    icon: 'me-icon-phone',
+    disabled: false
+  },
+  {label: '网关', value: "device/master/vbox", isActive: false, id: 3, icon: 'me-icon-phone', disabled: false},
 
 ]);
 
 const device_status = ref('')
 //序列号正则校验
 const highlight_box = (index: number) => {
-  console.log(index,'--index')
+  console.log(index, '--index')
   box_items.value.forEach((item, i) => {
     console.log(item, i)
     item.isActive = i === index;
@@ -217,37 +226,37 @@ const handle_add = () => {
   device_status.value = 'add'
   rule_form.value = JSON.parse(JSON.stringify(rule_form_data.value))
   dialog_visible.value = true
-  box_items.value = box_items.value.map(item => ({ ...item, isActive: false,disabled:false }));
+  box_items.value = box_items.value.map(item => ({...item, isActive: false, disabled: false}));
 
 }
 //分页
-const handleCurrentChange = (val:number) => {
-  console.log(val,'--val')
+const handleCurrentChange = (val: number) => {
+  console.log(val, '--val')
   current_page.value = val;
-  personnel_device_all(plotId,current_page.value,page_size.value,1,search_person.value)
+  personnel_device_all(plotId, current_page.value, page_size.value, 1, search_person.value)
 };
 //搜索
 const handle_search = () => {
   console.log('搜素',)
-  personnel_device_all(plotId,0,page_size.value,1,search_person.value)
+  personnel_device_all(plotId, 0, page_size.value, 1, search_person.value)
 }
 //刷新
 const handle_refresh = () => {
   console.log('刷新',)
-  personnel_device_all(plotId,current_page.value,page_size.value,1)
+  personnel_device_all(plotId, current_page.value, page_size.value, 1)
 
 }
 const multipleSelection = ref([]) //选中的人数 可以考虑只传id
 const handleSelectionChange = (val: any) => {
-  multipleSelection.value =val.map(item => item.id);
-  console.log( multipleSelection.value, '--val')
+  multipleSelection.value = val.map(item => item.id);
+  console.log(multipleSelection.value, '--val')
 }
 
 const handle_edit = (row) => {
   console.log('编辑')
   device_status.value = 'edit'
   box_items.value.forEach(item => {
-    item.disabled =true
+    item.disabled = true
     item.isActive = item.value === row.deviceType;
   });
   rule_form.value = JSON.parse(JSON.stringify(row))
@@ -256,7 +265,7 @@ const handle_edit = (row) => {
 //删除
 const handle_del = (row) => {
   console.log('删除')
-  const data =[]
+  const data = []
   data.push(row.id)
   ElMessageBox.confirm(
       t('将删除设备,是否确认?'),
@@ -394,58 +403,58 @@ const handle_remote = () => {
 }
 //获取所有设备列表
 //拿到当前列表的序号
-const set_index = (index)=>{
-  if (current_page.value >=1){
-    return (current_page.value -1) * page_size.value + index + 1
+const set_index = (index) => {
+  if (current_page.value >= 1) {
+    return (current_page.value - 1) * page_size.value + index + 1
 
-  }else  {
-    return (current_page.value ) * page_size.value + index + 1
+  } else {
+    return (current_page.value) * page_size.value + index + 1
 
   }
 }
 //获取所有数据
-const personnel_device_all =async (plotId:number,page:any,size:any,status:number,serialNo?:string)=>{
-  const res =await device_List(plotId,page,size,status,serialNo)
-  if (res.data.code === 200){
+const personnel_device_all = async (plotId: number, page: any, size: any, status: number, serialNo?: string) => {
+  const res = await device_List(plotId, page, size, status, serialNo)
+  if (res.data.code === 200) {
     device_list.value = res.data.data
   }
 }
 //添加设备
-const add_device =async (data)=>{
+const add_device = async (data) => {
   const res = await device_add(data)
-  if (res.data.code === 200){
-    await personnel_device_all(plotId, current_page.value, page_size.value,1)
-    message(t('添加')+t('设备')+t('成功'),{type:"success"})
-  }else  {
-    message(res.data.message,{type:"error"})
+  if (res.data.code === 200) {
+    await personnel_device_all(plotId, current_page.value, page_size.value, 1)
+    message(t('添加') + t('设备') + t('成功'), {type: "success"})
+  } else {
+    message(res.data.message, {type: "error"})
 
   }
 }
 //删除设备
-const del_device =async (id)=>{
+const del_device = async (id) => {
   const res = await device_del({
-    ids:id,
+    ids: id,
   })
-  if (res.data.code === 200){
-    await personnel_device_all(plotId, current_page.value, page_size.value,1)
-    message(t('删除')+t('设备')+t('成功'),{type:"success"})
-  }else  {
-    message(res.data.message,{type:"error"})
+  if (res.data.code === 200) {
+    await personnel_device_all(plotId, current_page.value, page_size.value, 1)
+    message(t('删除') + t('设备') + t('成功'), {type: "success"})
+  } else {
+    message(res.data.message, {type: "error"})
 
   }
 }
 //编辑设备
-const edit_device =async (data)=>{
+const edit_device = async (data) => {
   const res = await device_edit({
-    address:data.address,
-    deviceName:data.deviceName,
-    id:data.id
+    address: data.address,
+    deviceName: data.deviceName,
+    id: data.id
   })
-  if (res.data.code === 200){
-    await personnel_device_all(plotId, current_page.value, page_size.value,1)
-    message(t('编辑')+t('设备')+t('成功'),{type:"success"})
-  }else  {
-    message(res.data.message,{type:"error"})
+  if (res.data.code === 200) {
+    await personnel_device_all(plotId, current_page.value, page_size.value, 1)
+    message(t('编辑') + t('设备') + t('成功'), {type: "success"})
+  } else {
+    message(res.data.message, {type: "error"})
 
   }
 }
@@ -453,12 +462,12 @@ const edit_device =async (data)=>{
 const handle_save = async () => {
   rule_ref.value?.validate(async (valid, fields) => {
     if (valid) {
-      if (rule_form.value.deviceType === ''){
-        return message(t('设备类型')+t('不能为空'),{type:"error"})
+      if (rule_form.value.deviceType === '') {
+        return message(t('设备类型') + t('不能为空'), {type: "error"})
       }
-      if (device_status.value ==='add'){
-       await add_device(rule_form.value)
-      }else {
+      if (device_status.value === 'add') {
+        await add_device(rule_form.value)
+      } else {
         await edit_device(rule_form.value)
 
       }
@@ -475,11 +484,11 @@ const handle_close = () => {
   rule_ref.value.resetFields()
   dialog_visible.value = false
 }
-const getRowKey = (row:any)=>{
+const getRowKey = (row: any) => {
   return row.id
 }
-onMounted(()=>{
-  personnel_device_all(plotId,current_page.value,page_size.value,1)
+onMounted(() => {
+  personnel_device_all(plotId, current_page.value, page_size.value, 1)
 })
 </script>
 
@@ -583,16 +592,16 @@ onMounted(()=>{
         color: #ffffff
       }
     }
-.equipment_box {
-  display: inline-flex;
-  flex-wrap: wrap;
 
-  .equipment {
-    display: flex;
-    width: 100%;
-  }
-}
+    .equipment_box {
+      display: inline-flex;
+      flex-wrap: wrap;
 
+      .equipment {
+        display: flex;
+        width: 100%;
+      }
+    }
 
 
   }

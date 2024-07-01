@@ -22,28 +22,28 @@
           status-icon
           style="max-width: 600px"
       >
-<!--        <el-form-item :label="t('最小计时单位')" prop="minTimeUnit">-->
-<!--          <el-select-->
-<!--              v-model="overtime_date.minTimeUnit"-->
-<!--              size="large"-->
-<!--              style="width: 240px"-->
-<!--          >-->
-<!--            <el-option-->
-<!--                v-for="item in options"-->
-<!--                :key="item.value"-->
-<!--                :label="item.label"-->
-<!--                :value="item.value"-->
-<!--            />-->
-<!--          </el-select>-->
-<!--          <span class="select_text">系统按半小时统计考勤报表，不足半小时的部分不计入，例如0.8小时将按0.5小时计入 </span>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item :label="t('最小计时单位')" prop="minTimeUnit">-->
+        <!--          <el-select-->
+        <!--              v-model="overtime_date.minTimeUnit"-->
+        <!--              size="large"-->
+        <!--              style="width: 240px"-->
+        <!--          >-->
+        <!--            <el-option-->
+        <!--                v-for="item in options"-->
+        <!--                :key="item.value"-->
+        <!--                :label="item.label"-->
+        <!--                :value="item.value"-->
+        <!--            />-->
+        <!--          </el-select>-->
+        <!--          <span class="select_text">系统按半小时统计考勤报表，不足半小时的部分不计入，例如0.8小时将按0.5小时计入 </span>-->
+        <!--        </el-form-item>-->
         <el-form-item>
           <el-tabs v-model="overtime_date.type" class="demo_tabs" @tab-click="handleClick">
-            <el-tab-pane :label="t('工作日')" class="tab_pane" :name="1">
+            <el-tab-pane :label="t('工作日')" :name="1" class="tab_pane">
               <el-form-item :label="t('是否统计加班')">
                 <el-switch v-model="week_day.flag"/>
               </el-form-item>
-              <el-form-item >
+              <el-form-item>
                 <div class="week_div">
                   <span>{{ t('下班') }}</span>
                   <el-input v-model="week_day.offDutyPassTime"
@@ -72,7 +72,7 @@
               <!--               -->
               <!--              </el-form-item>-->
             </el-tab-pane>
-            <el-tab-pane :label="t('休息日')" class="tab_pane" :name="2">
+            <el-tab-pane :label="t('休息日')" :name="2" class="tab_pane">
               <el-form-item :label="t('是否统计加班')">
                 <el-switch v-model="Rest.flag"/>
               </el-form-item>
@@ -89,7 +89,7 @@
               </div>
 
             </el-tab-pane>
-            <el-tab-pane :label="t('节假日')" class="tab_pane" :name="3">
+            <el-tab-pane :label="t('节假日')" :name="3" class="tab_pane">
               <el-form-item :label="t('是否统计加班')">
                 <el-switch v-model="Holiday.flag"/>
               </el-form-item>
@@ -129,14 +129,14 @@ const {t} = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}
 const overtime_date = ref<any>({
   minTimeUnit: 1,  //最小计时单位[1-半小时;2-一小时;3-半天;4-一天]
   type: 1,//类型[1-工作日;2-休息日;3-节假日]
-  offDutyPassTime:0,
-  shortestTime:0
+  offDutyPassTime: 0,
+  shortestTime: 0
 })
 const overtime_date_copy = ref<any>({
   minTimeUnit: 1,  //最小计时单位[1-半小时;2-一小时;3-半天;4-一天]
   type: 1,//类型[1-工作日;2-休息日;3-节假日]
-  offDutyPassTime:0,
-  shortestTime:0
+  offDutyPassTime: 0,
+  shortestTime: 0
 })
 const rules = computed<FormRules>(() => ({
   // minTimeUnit: [
@@ -166,7 +166,7 @@ const Rest = ref({
   shortestTime: 0,
 })
 // 节假日
-const  Holiday = ref({
+const Holiday = ref({
   flag: false,
   offDutyPassTime: 0,
   shortestTime: 0,
@@ -177,13 +177,13 @@ const props = defineProps({  //父组件爱你传递过来的弹框状态
     type: Boolean as PropType<boolean>,
     default: false
   },
-  status:{
+  status: {
     type: String as PropType<string>,
     default: '',
   },
-  data:{
+  data: {
     type: Array as PropType<any>,
-    default:[],
+    default: [],
   }
 })
 const emit = defineEmits();   //定义子组件传递方法
@@ -194,7 +194,7 @@ const handle_close = () => {
 
 }
 //点击切换tab栏状态
-const handleClick =()=>{
+const handleClick = () => {
   week_day.value.flag = false
   week_day.value.offDutyPassTime = 0
   week_day.value.shortestTime = 0
@@ -206,16 +206,16 @@ const handleClick =()=>{
   Holiday.value.shortestTime = 0
 }
 const handle_save = () => {
-  if (overtime_date.value.type ===1 && week_day.value.flag ===true) {
-    overtime_date.value.offDutyPassTime =week_day.value.offDutyPassTime
-    overtime_date.value.shortestTime =week_day.value.shortestTime
-  }else  if(overtime_date.value.type ===2 && Rest.value.flag ===true) {
-    overtime_date.value.shortestTime =Rest.value.shortestTime
-    overtime_date.value.offDutyPassTime =Rest.value.offDutyPassTime
+  if (overtime_date.value.type === 1 && week_day.value.flag === true) {
+    overtime_date.value.offDutyPassTime = week_day.value.offDutyPassTime
+    overtime_date.value.shortestTime = week_day.value.shortestTime
+  } else if (overtime_date.value.type === 2 && Rest.value.flag === true) {
+    overtime_date.value.shortestTime = Rest.value.shortestTime
+    overtime_date.value.offDutyPassTime = Rest.value.offDutyPassTime
 
-  }else if (overtime_date.value.type ===3 && Holiday.value.flag ===true)  {
-    overtime_date.value.shortestTime =Holiday.value.shortestTime
-    overtime_date.value.offDutyPassTime =Holiday.value.offDutyPassTime
+  } else if (overtime_date.value.type === 3 && Holiday.value.flag === true) {
+    overtime_date.value.shortestTime = Holiday.value.shortestTime
+    overtime_date.value.offDutyPassTime = Holiday.value.offDutyPassTime
   }
   for (let key in overtime_date.value) {
     if (typeof overtime_date.value[key] === 'string') {
@@ -226,14 +226,14 @@ const handle_save = () => {
   }
   const data = []
   data.push(overtime_date.value)
-  console.log(data,'--111')
+  console.log(data, '--111')
   console.log('确认')
   dialog_visible.value = false
-  emit("overtime_dialog", dialog_visible.value, 'save',data);
+  emit("overtime_dialog", dialog_visible.value, 'save', data);
 
 }
-const init_date = (status:string,list:any)=>{
-  if (status ==='add'){
+const init_date = (status: string, list: any) => {
+  if (status === 'add') {
     overtime_date.value = JSON.parse(JSON.stringify(overtime_date_copy.value))
     week_day.value.flag = false
     week_day.value.offDutyPassTime = 0
@@ -244,24 +244,22 @@ const init_date = (status:string,list:any)=>{
     Holiday.value.flag = false
     Holiday.value.offDutyPassTime = 0
     Holiday.value.shortestTime = 0
-  }else {
-    if (list.length ===0){
+  } else {
+    if (list.length === 0) {
       overtime_date.value = JSON.parse(JSON.stringify(overtime_date_copy.value))
-    }else {
+    } else {
       overtime_date.value = JSON.parse(JSON.stringify(list[0]))
       console.log('这')
-      if (overtime_date.value.type === 1 ) {
+      if (overtime_date.value.type === 1) {
         week_day.value.flag = true
         week_day.value.offDutyPassTime = overtime_date.value.offDutyPassTime;
         week_day.value.shortestTime = overtime_date.value.shortestTime;
-      }
-      else if (overtime_date.value.type === 2) {
+      } else if (overtime_date.value.type === 2) {
         Rest.value.flag = true
 
         Rest.value.shortestTime = overtime_date.value.shortestTime;
         Rest.value.offDutyPassTime = overtime_date.value.offDutyPassTime;
-      }
-      else if (overtime_date.value.type === 3 ) {
+      } else if (overtime_date.value.type === 3) {
         Holiday.value.flag = true
         Holiday.value.shortestTime = overtime_date.value.shortestTime;
         Holiday.value.offDutyPassTime = overtime_date.value.offDutyPassTime;
@@ -278,11 +276,11 @@ const init_date = (status:string,list:any)=>{
   }
 }
 watch(
-    [ () => props.overtime,()=>props.status,()=>props.data],
-    ([newVal,newStatus,newData]) => {
+    [() => props.overtime, () => props.status, () => props.data],
+    ([newVal, newStatus, newData]) => {
       dialog_visible.value = newVal;
-      console.log(newData,'--newData')
-      init_date(newStatus,newData)
+      console.log(newData, '--newData')
+      init_date(newStatus, newData)
     }
 );
 </script>

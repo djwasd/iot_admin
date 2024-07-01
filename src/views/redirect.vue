@@ -1,8 +1,9 @@
 <template>
   <span></span>
 </template>
-<script setup lang="ts" name="Redirect">
-import { useRouteStore } from '@/store';
+<script lang="ts" name="Redirect" setup>
+import {useRouteStore} from '@/store';
+
 const route = useRoute();
 const router = useRouter();
 const fullPath = route.params.path as string;

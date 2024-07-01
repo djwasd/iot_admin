@@ -8,7 +8,7 @@
     >
       <template #header>
         <div class="drawer_header">
-          {{drawer_status ==='add'?t('新建'):t('编辑')}}{{ t('规则') }}
+          {{ drawer_status === 'add' ? t('新建') : t('编辑') }}{{ t('规则') }}
         </div>
       </template>
       <template #default>
@@ -53,18 +53,20 @@
             </div>
           </el-form-item>
           <el-form-item :label="t('考勤人员')">
-            <el-button class="item_btn" @click="handle_personnel">{{drawer_status ==='add'? t('添加人员'):t('编辑人员') }}</el-button>
+            <el-button class="item_btn" @click="handle_personnel">
+              {{ drawer_status === 'add' ? t('添加人员') : t('编辑人员') }}
+            </el-button>
           </el-form-item>
 
           <el-form-item v-if="rule_form.type===2" :label="t('考勤班次')">
-<!--            <el-button class="item_btn" @click="handle_shift">{{drawer_status ==='add'? t('添加班次'):t('编辑班次')  }}</el-button>-->
-            <el-button class="item_btn" @click="handle_shift">{{t('添加班次')  }}</el-button>
+            <!--            <el-button class="item_btn" @click="handle_shift">{{drawer_status ==='add'? t('添加班次'):t('编辑班次')  }}</el-button>-->
+            <el-button class="item_btn" @click="handle_shift">{{ t('添加班次') }}</el-button>
 
             <el-table
                 ref="table_ref"
                 :data="shift_all.records"
-                style="width: 100%"
                 height="300"
+                style="width: 100%"
                 @selection-change="handleSelectionChange"
             >
               <el-table-column type="selection" width="55"/>
@@ -85,11 +87,12 @@
             <span class="item_switch">{{ t('开启后,系统根据打卡时间自动匹配最接近的班次') }}</span>
           </el-form-item>
           <el-form-item v-if="rule_form.type===1 || rule_form.type===3" :label="t('考勤时间')">
-            <time_table :data="rule_form.attendanceRuleSchedulingList" @save_time="handle_save_time" :status="drawer_status" ></time_table>
+            <time_table :data="rule_form.attendanceRuleSchedulingList" :status="drawer_status"
+                        @save_time="handle_save_time"></time_table>
           </el-form-item>
-<!--          <el-form-item v-if="rule_form.type===3" :label="t('考勤时间')">-->
-<!--            <free_table></free_table>-->
-<!--          </el-form-item>-->
+          <!--          <el-form-item v-if="rule_form.type===3" :label="t('考勤时间')">-->
+          <!--            <free_table></free_table>-->
+          <!--          </el-form-item>-->
           <el-form-item v-if="rule_form.type===3" :label="t('最小工作时间')">
 
             <el-input
@@ -121,13 +124,17 @@
             </el-select>
           </el-form-item>
           <el-form-item v-if="rule_form.type===1 || rule_form.type===3" :label="t('特殊日期')">
-            <el-button class="item_btn" @click="handle_check_dialog('special_work')">{{drawer_status ==='add'? t('添加'):t('编辑')}}{{ t('必须打卡日期') }}
+            <el-button class="item_btn" @click="handle_check_dialog('special_work')">
+              {{ drawer_status === 'add' ? t('添加') : t('编辑') }}{{ t('必须打卡日期') }}
             </el-button>
-            <el-button class="item_btn" @click="handle_check_dialog('special_not_work')" >{{drawer_status ==='add'?t('添加'):t('编辑')}}{{ t('不用打卡日期') }}
+            <el-button class="item_btn" @click="handle_check_dialog('special_not_work')">
+              {{ drawer_status === 'add' ? t('添加') : t('编辑') }}{{ t('不用打卡日期') }}
             </el-button>
           </el-form-item>
           <el-form-item :label="t('考勤设备')">
-            <el-button class="item_btn" @click="handle_equipment">{{drawer_status ==='add'? t('添加'):t('编辑')}}{{ t('考勤设备') }}</el-button>
+            <el-button class="item_btn" @click="handle_equipment">
+              {{ drawer_status === 'add' ? t('添加') : t('编辑') }}{{ t('考勤设备') }}
+            </el-button>
           </el-form-item>
           <el-form-item :label="t('加班统计')">
             <el-switch v-model="rule_form.isOvertimeStat"/>
@@ -144,26 +151,29 @@
     </el-drawer>
   </div>
   <!--  选择人员和部门-->
-  <personnel_dialog :id="rule_form.id" :data="rule_form.personList" :status="drawer_status" :dialog="person_dialog" @save_dialog='handle_save_dialog'></personnel_dialog>
+  <personnel_dialog :id="rule_form.id" :data="rule_form.personList" :dialog="person_dialog" :status="drawer_status"
+                    @save_dialog='handle_save_dialog'></personnel_dialog>
   <!-- 必须打卡日期-->
-  <special_work   :data="rule_form.specialWorkDateList" :status="drawer_status" :check_dialog="check_date_dia" @check_dialog="handle_check"></special_work>
+  <special_work :check_dialog="check_date_dia" :data="rule_form.specialWorkDateList" :status="drawer_status"
+                @check_dialog="handle_check"></special_work>
   <!-- 不打卡日期-->
-  <special_not_work  :data="rule_form.specialNotWorkDateList"  :status="drawer_status" :special_not_dialog="special_not_dia" @not_work_dialog="handle_not_work"></special_not_work>
+  <special_not_work :data="rule_form.specialNotWorkDateList" :special_not_dialog="special_not_dia"
+                    :status="drawer_status" @not_work_dialog="handle_not_work"></special_not_work>
   <!--选择考勤设备-->
-  <equipment_dialog :status="drawer_status" :id="rule_form.id" :data=" rule_form.attendanceRuleDeviceList"  :equipment_dia="equipment" @save_equipment_dia="handle_save_equipment"></equipment_dialog>
+  <equipment_dialog :id="rule_form.id" :data=" rule_form.attendanceRuleDeviceList" :equipment_dia="equipment"
+                    :status="drawer_status" @save_equipment_dia="handle_save_equipment"></equipment_dialog>
   <!--  加班规则-->
 
-  <overtime_dialog :data="rule_form.overtimeRuleList"   :status="drawer_status" :overtime="overtime_dia" @overtime_dialog="handle_overtime_dialog"></overtime_dialog>
+  <overtime_dialog :data="rule_form.overtimeRuleList" :overtime="overtime_dia" :status="drawer_status"
+                   @overtime_dialog="handle_overtime_dialog"></overtime_dialog>
   <!--添加班次的弹框-->
   <shift_dialog :shift_dialog="shift_dia" @save_shift_dialog="handle_shift_dialog"></shift_dialog>
 </template>
 
 <script lang="ts" setup>
 
-import {shiftTimestamp} from "@/utils/packagingmethod/time";
 import time_table from '../time_table/index.vue'
 // import free_table from '../free_table/index.vue'
-
 import personnel_dialog from '../personnel_dialog/index.vue'
 import equipment_dialog from '../equipment_dialog/index.vue'
 import overtime_dialog from '../overtime_dialog/index.vue'
@@ -180,7 +190,7 @@ import {message} from "@/utils/components/message";
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'attendance']);
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId //组织id
-const plans_data =ref({
+const plans_data = ref({
   "records": [
     {
       "id": "1",
@@ -206,7 +216,7 @@ const props = defineProps({  //父组件爱你传递过来的弹框状态
   },
 })
 const emit = defineEmits();   //定义子组件传递方法.
-const table_ref =ref(null)//当前考勤班次的示例
+const table_ref = ref(null)//当前考勤班次的示例
 const rule_form = ref<any>({
   name: '',//*规则名称:
   type: 1, //*规则名称:
@@ -237,35 +247,36 @@ const rules = computed<FormRules>(() => ({
 const multipleSelection = ref([])//添加班次选中的数据
 const drawer_status = ref('') //当前抽屉是编辑还是添加
 const shift_all = ref({
-  "records": [
-    {
-      "name": "1",
-      "week": null,
-      "startTime": "11:42:46",
-      "endTime": "18:42:46"
+      "records": [
+        {
+          "name": "1",
+          "week": null,
+          "startTime": "11:42:46",
+          "endTime": "18:42:46"
+        }
+      ],
     }
-  ],}
 )
 //点击考勤人员按钮 弹出dialog
 const handle_personnel = () => {
   person_dialog.value = true
 }
 //personnel_dialog 考勤人员组建回调上来的数据
-const handle_save_dialog = (dialog_status: boolean, status: string,data:any) => {
+const handle_save_dialog = (dialog_status: boolean, status: string, data: any) => {
   person_dialog.value = dialog_status
-  if (status ==='cancel')return true
+  if (status === 'cancel') return true
   rule_form.value.personList = data
 }
 //打卡组建传上来的数据
 const handle_check = (dialog_status: boolean, status: string, date: Array<number>) => {
   check_date_dia.value = dialog_status
-  if (status ==='cancel')return true
+  if (status === 'cancel') return true
   rule_form.value.specialWorkDateList = date  //考勤规则不用打卡日期数组
 }
 
 const handle_not_work = (dialog_status: boolean, status: string, date: Array<number>) => {
   special_not_dia.value = dialog_status
-  if (status ==='cancel')return true
+  if (status === 'cancel') return true
 
   rule_form.value.specialNotWorkDateList = date  //考勤规则打卡日期数组
 }
@@ -282,14 +293,14 @@ const handle_equipment = () => {
   equipment.value = true //改变考勤弹框的状态
 }
 //点击考勤弹框传递上来的数据
-const handle_save_equipment = (dialog_status: boolean, status: string,data:any) => {
+const handle_save_equipment = (dialog_status: boolean, status: string, data: any) => {
   equipment.value = dialog_status
-  if (status ==='cancel')return true
+  if (status === 'cancel') return true
   rule_form.value.attendanceRuleDeviceList = data
 
 }
 //考勤时间组建返回上来的数据
-const handle_save_time = (data:any)=>{
+const handle_save_time = (data: any) => {
   rule_form.value.attendanceRuleSchedulingList = data
 }
 
@@ -305,7 +316,7 @@ const handle_save = () => {
   rule_ref.value?.validate(async (valid: boolean, fields: any) => {
     if (valid) {
       drawer.value = false
-      emit("save", drawer.value, 'save',rule_form.value,drawer_status.value);
+      emit("save", drawer.value, 'save', rule_form.value, drawer_status.value);
     } else {
       console.log('提交错误', fields);
     }
@@ -316,7 +327,7 @@ const handle_overtime = () => {
   overtime_dia.value = true
 }
 //加班统计返回上来的状态数据
-const handle_overtime_dialog = (dialog_status: boolean, status: string,list:any) => {
+const handle_overtime_dialog = (dialog_status: boolean, status: string, list: any) => {
   overtime_dia.value = dialog_status
   if (status == 'cancel') return true
   rule_form.value.overtimeRuleList = list
@@ -326,7 +337,7 @@ const handle_shift = () => {
   shift_dia.value = true
 }
 //添加班次返回的数据
-const handle_shift_dialog =async (dialog_status: boolean, status: string) => {
+const handle_shift_dialog = async (dialog_status: boolean, status: string) => {
   shift_dia.value = dialog_status
   if (status == 'cancel') return true
   await shift_init(plotId)
@@ -334,9 +345,9 @@ const handle_shift_dialog =async (dialog_status: boolean, status: string) => {
 }
 //添加班次table选中的框
 const handleSelectionChange = (val: any) => {
-  multipleSelection.value =val.map(item => item.id);
+  multipleSelection.value = val.map(item => item.id);
   // classIds
-  rule_form.value.classIds =  multipleSelection.value
+  rule_form.value.classIds = multipleSelection.value
 }
 
 const handle_shift_del = (row: any) => {
@@ -351,11 +362,11 @@ const handle_shift_del = (row: any) => {
   )
       .then(async () => {
 
-        await  del_shift(row.id)
+        await del_shift(row.id)
 
       })
       .catch(() => {
-        message(t('取消批量删除'),{ type: "error" })
+        message(t('取消批量删除'), {type: "error"})
 
       })
 }
@@ -376,64 +387,64 @@ const handle_radio_group = async (value: number) => {
 
 }
 //获取节假日列表
-const holiday_plan_all = async  (plotId:number,name?:string)=>{
-  const res =await holiday_plan(plotId,name)
-  if (res.data.code===200){
+const holiday_plan_all = async (plotId: number, name?: string) => {
+  const res = await holiday_plan(plotId, name)
+  if (res.data.code === 200) {
     plans_data.value = res.data.data
 
   }
 }
-const shift_init =async (plotId:number, page?:any,size?:any)=>{
-  const res =await attendance_list(plotId,page,size)
-   shift_all.value = res.data.data
+const shift_init = async (plotId: number, page?: any, size?: any) => {
+  const res = await attendance_list(plotId, page, size)
+  shift_all.value = res.data.data
 }
-const del_shift = async (id:string) => {
+const del_shift = async (id: string) => {
   const res = await shift_del({
     id: id
   })
-  if (res.data.code ===200){
+  if (res.data.code === 200) {
     await shift_init(plotId)
-    message(t('删除成功'),{type:'success'})
-  }else {
-    message(res.data.message,{type:'error'})
+    message(t('删除成功'), {type: 'success'})
+  } else {
+    message(res.data.message, {type: 'error'})
 
   }
 }
-const toggleSelection =(list:any,status:string)=>{
-  if (table_ref.value){
-    if (status === 'add'){
-        shift_all.value.records.forEach((row: any) => {
+const toggleSelection = (list: any, status: string) => {
+  if (table_ref.value) {
+    if (status === 'add') {
+      shift_all.value.records.forEach((row: any) => {
         table_ref.value.toggleRowSelection(row, false); // 默认勾选
       })
-    }else {
+    } else {
       let filter_data = shift_all.value.records.filter(itemB => list.some(itemA => itemA.id === itemB.id));
-      filter_data.forEach((row:any)=>{
+      filter_data.forEach((row: any) => {
         table_ref.value.toggleRowSelection(row, true); // 默认勾选
       })
     }
   }
 }
-const init_toggleSelection =(data:any,status:string)=>{
+const init_toggleSelection = (data: any, status: string) => {
   nextTick(() => {
-    toggleSelection(data,status)
+    toggleSelection(data, status)
   })
 }
 
-onMounted(async ()=>{
- await  holiday_plan_all(plotId)//获取初始部门列表
+onMounted(async () => {
+  await holiday_plan_all(plotId)//获取初始部门列表
 })
 watch(() => props.drawer_flag,
-  async  (newVal) => {
+    async (newVal) => {
       drawer.value = newVal.drawer;
       rule_form.value = JSON.parse(JSON.stringify(newVal.attendance))
       drawer_status.value = newVal.status
-    if ( rule_form.value.type === 2 && drawer_status.value ==='edit'){
-     await shift_init(plotId)
-      init_toggleSelection( rule_form.value.attendanceRuleSchedulingList,'edit')
-      multipleSelection.value = rule_form.value.attendanceRuleSchedulingList
-    }else if (rule_form.value.type === 2 && drawer_status.value ==='add'){
-      init_toggleSelection( rule_form.value.attendanceRuleSchedulingList,'add')
-    }
+      if (rule_form.value.type === 2 && drawer_status.value === 'edit') {
+        await shift_init(plotId)
+        init_toggleSelection(rule_form.value.attendanceRuleSchedulingList, 'edit')
+        multipleSelection.value = rule_form.value.attendanceRuleSchedulingList
+      } else if (rule_form.value.type === 2 && drawer_status.value === 'add') {
+        init_toggleSelection(rule_form.value.attendanceRuleSchedulingList, 'add')
+      }
     },
     {deep: true},
 );

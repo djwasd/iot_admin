@@ -8,16 +8,17 @@
     </div>
     <div class="person_bottom">
       <div class="box-container">
-        <div class="box" v-for="(item,index) in codeAll_data.records" :key="item.id">
+        <div v-for="(item,index) in codeAll_data.records" :key="item.id" class="box">
           <div class="box-content">
-            <div class="top">{{item.name}}</div>
-            <qrcode-vue :id="`qrcode${item.id}`" class="qrcode" :value="'http://124.71.181.178/#/records?code=' + item.code"></qrcode-vue>
-            <div>{{item.type ===1?t('永久有效'):timestamp_to_time(item.failureTimestamp)+t('失效')}}</div>
+            <div class="top">{{ item.name }}</div>
+            <qrcode-vue :id="`qrcode${item.id}`" :value="'http://124.71.181.178/#/records?code=' + item.code"
+                        class="qrcode"></qrcode-vue>
+            <div>{{ item.type === 1 ? t('永久有效') : timestamp_to_time(item.failureTimestamp) + t('失效') }}</div>
           </div>
-        <div class="qrcord_image">
-          <img src="@/assets/images/png/white_save.png" @click="handle_image(`qrcode${item.id}`)" class="edit-button">
-          <img src="@/assets/images/png/white_del.png" @click="handle_del(item)" class="delete-button">
-        </div>
+          <div class="qrcord_image">
+            <img class="edit-button" src="@/assets/images/png/white_save.png" @click="handle_image(`qrcode${item.id}`)">
+            <img class="delete-button" src="@/assets/images/png/white_del.png" @click="handle_del(item)">
+          </div>
 
         </div>
       </div>
@@ -43,17 +44,17 @@
       >
         <el-form-item :label="t('名称')" class="form_item" prop="name">
           <el-input
-              style="width: 220px"
               v-model="code.name"
               autocomplete="off"
               clearable
+              style="width: 220px"
           >
           </el-input>
         </el-form-item>
         <el-form-item :label="t('有效期')" class="form_item" prop="type">
           <el-radio-group v-model="code.type" class="ml-4">
-            <el-radio :value="1" size="large">{{t('永久')}}</el-radio>
-            <el-radio :value="2" size="large">{{t('自定义')}}</el-radio>
+            <el-radio :value="1" size="large">{{ t('永久') }}</el-radio>
+            <el-radio :value="2" size="large">{{ t('自定义') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item v-if="code.type===2" :label="t('失效日期')" class="form_item" prop="failureTimestamp">
@@ -90,27 +91,27 @@ const code_ref = ref<FormInstance>(); //拿到当前ref实力
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
 const codeAll_data = ref({
-  records:[
+  records: [
     {
-      type:1,
-      name:'code',
-      failureTimestamp:0,
-      id:0,
-      code:0,
+      type: 1,
+      name: 'code',
+      failureTimestamp: 0,
+      id: 0,
+      code: 0,
     }
   ]
 })
 const code_list = ref({
   name: '',
-  type:1,
-  failureTimestamp:null,
-  plotId:plotId,
+  type: 1,
+  failureTimestamp: null,
+  plotId: plotId,
 })
 const code = ref({
   name: '',
-  type:1,
-  failureTimestamp:null,
-  plotId:plotId,
+  type: 1,
+  failureTimestamp: null,
+  plotId: plotId,
 })
 const rules = computed<FormRules>(() => ({
   name: [
@@ -144,10 +145,10 @@ const handle_add = () => {
   dialog_visible.value = true
 
 }
-const handle_del = (item:any)=>{
+const handle_del = (item: any) => {
   ElMessageBox.confirm(
-       t('删除') +  item.name +t('是否确认?') ,
-      t('删除')+t('访客码'),
+      t('删除') + item.name + t('是否确认?'),
+      t('删除') + t('访客码'),
       {
         confirmButtonText: t('确认'),
         cancelButtonText: t('取消'),
@@ -158,7 +159,7 @@ const handle_del = (item:any)=>{
         await handle_del_code(item.id)
       })
       .catch(() => {
-        message(t('取消')+t('删除')+t('访客码'), {type: 'error'})
+        message(t('取消') + t('删除') + t('访客码'), {type: 'error'})
       })
 }
 const handle_close = () => {
@@ -167,34 +168,34 @@ const handle_close = () => {
   dialog_visible.value = false
 }
 //添加访客码
-const handle_add_code =async (data:any)=>{
-  const res =await visit_code_add(data)
+const handle_add_code = async (data: any) => {
+  const res = await visit_code_add(data)
   if (res.data.code === 200) {
-    await  code_all(plotId,page.value,size.value)
+    await code_all(plotId, page.value, size.value)
 
-    message(t('添加')+t('成功'),{type:'success'})
-  }else {
-    message(res.data.message,{type:'error'})
+    message(t('添加') + t('成功'), {type: 'success'})
+  } else {
+    message(res.data.message, {type: 'error'})
   }
 }
 //删除访客码
-const handle_del_code =async (id:any)=>{
-  const res =await visit_code_del({
-    id:id
+const handle_del_code = async (id: any) => {
+  const res = await visit_code_del({
+    id: id
   })
   if (res.data.code === 200) {
-    await   code_all(plotId,page.value,size.value)
+    await code_all(plotId, page.value, size.value)
 
-    message(t('删除')+t('成功'),{type:'success'})
-  }else {
-    message(res.data.message,{type:'error'})
+    message(t('删除') + t('成功'), {type: 'success'})
+  } else {
+    message(res.data.message, {type: 'error'})
   }
 }
 
 const handle_save = () => {
   code_ref.value?.validate(async (valid: boolean, fields: any) => {
     if (valid) {
-      if (code.value.type ===1){
+      if (code.value.type === 1) {
         delete code.value.failureTimestamp
       }
       await handle_add_code(code.value)
@@ -208,17 +209,17 @@ const handle_save = () => {
   })
 }
 //获取所有通行码
-const code_all = async (plotId:number,page:number,size:number) => {
-  const res = await code_data(plotId,page,size)
+const code_all = async (plotId: number, page: number, size: number) => {
+  const res = await code_data(plotId, page, size)
   codeAll_data.value = res.data.data
-  console.log(codeAll_data.value,'--codeAll_data.value')
+  console.log(codeAll_data.value, '--codeAll_data.value')
 }
-const handle_image =(id:any)=>{
+const handle_image = (id: any) => {
   downLoadQRcode(id)
 
 }
-onMounted(()=>{
-  code_all(plotId,page.value,size.value)
+onMounted(() => {
+  code_all(plotId, page.value, size.value)
 })
 </script>
 
@@ -262,10 +263,12 @@ onMounted(()=>{
 
     }
   }
+
   .person_bottom {
     //padding: 11px;
     margin: 10px 20px 10px 20px;
     width: 800px;
+
     .box-container {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -278,22 +281,26 @@ onMounted(()=>{
       padding: 0 10px;
 
       height: 160px;
+
       .box-content {
         text-align: center;
+
         .top {
           padding-top: 5px;
         }
+
         .qrcode {
           padding: 5px 0 5px 0;
         }
       }
+
       .qrcord_image {
-      position: absolute;
+        position: absolute;
         top: 0; /* 调整 top 属性的值 */
         right: 0; /* 调整 right 属性的值 */
         width: 55px;
         height: 30px;
-        background-color:#7e7e7e;
+        background-color: #7e7e7e;
         border-bottom-left-radius: 15px;
       }
 
@@ -303,15 +310,16 @@ onMounted(()=>{
         height: 20px;
         position: absolute;
         top: 5px;
-        right:0;
+        right: 0;
       }
+
       .edit-button {
         cursor: pointer;
         width: 20px;
         height: 20px;
         position: absolute;
         top: 5px;
-        right:25px;
+        right: 25px;
       }
     }
   }

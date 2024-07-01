@@ -1,6 +1,6 @@
 <template>
   <div class="no-page">
-    <img src="@/assets/images/404.svg?url" />
+    <img src="@/assets/images/404.svg?url"/>
     <div class="info">
       <div class="title">404</div>
       <div class="content">
@@ -20,6 +20,7 @@
   width: 100%;
   height: 100%;
   font-size: 1.2rem;
+
   img {
     width: 100%;
     max-width: 500px;

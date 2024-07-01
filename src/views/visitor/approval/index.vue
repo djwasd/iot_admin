@@ -24,21 +24,21 @@
         <el-table-column :label="t('通行照片')" prop="visitorFacePicture">
           <template #default="{ row }">
             <el-image
-                style="width: 30px; height: 30px"
-                :src="git_pic(row)"
-                :zoom-rate="1.2"
                 :max-scale="7"
                 :min-scale="0.2"
-                fit="cover"
-                :preview-teleported="true"
                 :preview-src-list="[git_pic(row)]"
+                :preview-teleported="true"
+                :src="git_pic(row)"
+                :zoom-rate="1.2"
+                fit="cover"
+                style="width: 30px; height: 30px"
             >
             </el-image>
           </template>
         </el-table-column>
         <el-table-column :label="t('申请时间')" prop="applyTimestamp">
           <template #default="{ row }">
-            {{format_data(row.applyTimestamp)}}
+            {{ format_data(row.applyTimestamp) }}
           </template>
         </el-table-column>
         <el-table-column :label="t('审批状态')" prop="applyStatus">
@@ -67,17 +67,16 @@
       />
 
     </div>
-    <drawer :list_dia="drawer_flag"
+    <drawer :editDate="edit_data"
+            :list_dia="drawer_flag"
             @save_list="handle_save_list"
-            :editDate="edit_data"
     ></drawer>
   </div>
 </template>
 
 
-
-<script setup lang="ts">
-import drawer from  './component/drawer.vue'
+<script lang="ts" setup>
+import drawer from './component/drawer.vue'
 
 import {useLocalesI18n} from "@/locales/hooks";
 import {useUserStore} from "@/store";
@@ -85,14 +84,13 @@ import {format_data} from "@/utils/packagingmethod/time";
 import no_pic from "@/assets/images/png/no_pic.png";
 import {action_audit, action_del, visit_list} from "@/api/visitor";
 import {message} from "@/utils/components/message";
-import {upload_person} from "@/api/glob";
 
-const { t } = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'authorization']);
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'authorization']);
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
 const visit_data = ref({
   "records": [
-    {applyTimestamp: 0,applyStatus:0,}
+    {applyTimestamp: 0, applyStatus: 0,}
   ],
   "total": 0,
   "size": 12,
@@ -108,44 +106,44 @@ const multipleSelection = ref([]) //选中的人数 可以考虑只传id
 const current_page = ref(0);//当前页数
 const page_size = ref(10); //每页显示条目个数
 const edit_data = ref({
-  id:0
+  id: 0
 })
 const drawer_flag = ref<boolean>(false)
 const source = ref<number>(3)
-const  applyStatusStyle = (applyStatus:any) => {
+const applyStatusStyle = (applyStatus: any) => {
   const statusColors = {
     1: 'orange',
     2: 'red',
-    3:'green',
+    3: 'green',
     default: 'red'
   };
 
   const color = statusColors.hasOwnProperty(applyStatus) ? statusColors[applyStatus] : statusColors.default;
 
-  return { color };
+  return {color};
 }
-const handle_approval = (row:any)=>{
+const handle_approval = (row: any) => {
   edit_data.value = row
   drawer_flag.value = true
 }
-const handle_save_list =(flag:boolean,status:string,data:any)=>{
+const handle_save_list = (flag: boolean, status: string, data: any) => {
   drawer_flag.value = flag
-  if (status==='cancel') return true
-  console.log(data,'--data')//拿到当前审批的数据
-  audit(edit_data.value.id,data)
+  if (status === 'cancel') return true
+  console.log(data, '--data')//拿到当前审批的数据
+  audit(edit_data.value.id, data)
 }
 //审批
-const audit =async (id:number,data: any) => {
+const audit = async (id: number, data: any) => {
   const res = await action_audit({
     id: id,
     result: data.result,
-    devices:data.devices
+    devices: data.devices
   })
-  if (res.data.code===200){
-    await visit_all(plotId, current_page.value, page_size.value,source.value)
-    message(t('审核完成'),{type:'success'})
-  }else {
-    message(res.data.message,{type:'error'})
+  if (res.data.code === 200) {
+    await visit_all(plotId, current_page.value, page_size.value, source.value)
+    message(t('审核完成'), {type: 'success'})
+  } else {
+    message(res.data.message, {type: 'error'})
   }
 }
 const getRowKey = (row: any) => {
@@ -166,18 +164,18 @@ const set_index = (index: number) => {
   }
 }
 //获取table照片
-const git_pic =  (row:any) => {
+const git_pic = (row: any) => {
   if (row.visitorFacePicture) {
     // const res =  upload_person(row.visitorFacePicture);
     const ipAddress = window.location.host;
-    const url =  `http://${ipAddress}/operation/cloud/web/sys/api/v1/attachment/actions/download?file_id=${row.visitorFacePicture}`;
-    return  url
+    const url = `http://${ipAddress}/operation/cloud/web/sys/api/v1/attachment/actions/download?file_id=${row.visitorFacePicture}`;
+    return url
   }
   return no_pic;
 };
 const handleCurrentChange = async (val: number) => {
   current_page.value = val;
-  await visit_all(plotId, current_page.value, page_size.value,source.value)
+  await visit_all(plotId, current_page.value, page_size.value, source.value)
 
 };
 //获取列表数据
@@ -208,13 +206,13 @@ const del_action = async (ids: any) => {
     ids: ids
   })
   if (res.data.code === 200) {
-    await visit_all(plotId, current_page.value, page_size.value,source.value)
+    await visit_all(plotId, current_page.value, page_size.value, source.value)
     message(t('删除成功'), {type: "success"})
   } else {
     message(res.data.message, {type: 'error'})
   }
 }
-const visit_all = async (plotId:number,page: number, size: number,source?:number,visitName?: string, intervieweeName?: string, attendanceStartTimestamp?: number, attendanceEndTimestamp?: number) => {
+const visit_all = async (plotId: number, page: number, size: number, source?: number, visitName?: string, intervieweeName?: string, attendanceStartTimestamp?: number, attendanceEndTimestamp?: number) => {
   const res = await visit_list(
       plotId,
       page,
@@ -235,26 +233,27 @@ const route = useRoute();
 watch(
     route,
     async () => {
-      await visit_all(plotId, current_page.value, page_size.value,source.value)
+      await visit_all(plotId, current_page.value, page_size.value, source.value)
 
     },
-    { immediate: true },
+    {immediate: true},
 );
 </script>
 
 
-
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .person {
   width: 100%;
   height: 85vh;
   //padding: 16px;
   background-color: #ffffff;
+
   .device {
     font-size: 18px;
     padding: 20px 0 0 20px;
     font-weight: 700;
   }
+
   .table-wrapper {
     padding-top: 20px;
     padding-left: 20px;

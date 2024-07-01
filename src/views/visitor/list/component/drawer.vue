@@ -2,14 +2,14 @@
   <div>
     <el-drawer
         v-model="props.list_dia"
-        direction="rtl"
         :before-close="handle_cancel"
         class="drawer"
+        direction="rtl"
         size="35%"
     >
       <template #header>
         <div class="drawer_header">
-          {{t('访客列表')}}
+          {{ t('访客列表') }}
         </div>
       </template>
       <template #default>
@@ -22,7 +22,7 @@
             label-width="auto"
 
         >
-          <div class="form_text">{{t('访客信息')}}</div>
+          <div class="form_text">{{ t('访客信息') }}</div>
           <div class="visitor">
             <div class="visitor_left">
               <el-form-item :label="t('姓名')" prop="visitorName">
@@ -34,11 +34,11 @@
                 >
                 </el-input>
               </el-form-item>
-              <el-form-item :label="t('性别')"  prop="visitorSex">
+              <el-form-item :label="t('性别')" prop="visitorSex">
 
-                <el-select style="width: 175px" class="location_select" v-model="rule_form.visitorSex" >
-                  <el-option :label="t('男')" :value="1" />
-                  <el-option :label="t('女')" :value="2" />
+                <el-select v-model="rule_form.visitorSex" class="location_select" style="width: 175px">
+                  <el-option :label="t('男')" :value="1"/>
+                  <el-option :label="t('女')" :value="2"/>
                 </el-select>
               </el-form-item>
               <el-form-item :label="t('公司')" prop="visitorCompany">
@@ -85,13 +85,13 @@
             </div>
             <div class="visitor_right">
               <el-form-item :label="t('通行照片')" prop="visitorFacePicture">
-                <SingleImage @update:image-url="handle_update" v-model:imageUrl="list_picture" :fileSize="3">
-                  <template #tip> 分辨率不大于1080*1920 </template>
+                <SingleImage v-model:imageUrl="list_picture" :fileSize="3" @update:image-url="handle_update">
+                  <template #tip> 分辨率不大于1080*1920</template>
                 </SingleImage>
               </el-form-item>
             </div>
           </div>
-          <div class="form_text">{{t('访问信息')}}</div>
+          <div class="form_text">{{ t('访问信息') }}</div>
           <div class="accessing">
             <div class="accessing_left">
               <el-form-item :label="t('被访人')" prop="interviewee">
@@ -117,13 +117,13 @@
             </div>
 
           </div>
-          <el-form-item :label="t('访问日期')" >
+          <el-form-item :label="t('访问日期')">
             <el-date-picker
                 v-model="access_date"
-                type="datetimerange"
-                :start-placeholder="t('开始日期')"
                 :end-placeholder="t('结束日期')"
+                :start-placeholder="t('开始日期')"
                 format="YYYY-MM-DD HH:mm:ss"
+                type="datetimerange"
                 value-format="x"
             />
           </el-form-item>
@@ -142,7 +142,7 @@
 </template>
 
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {useLocalesI18n} from "@/locales/hooks";
 import {FormInstance, FormRules} from "element-plus";
 import {validateIDCard, validatePhoneNumber} from "@/utils/packagingmethod/rules";
@@ -151,43 +151,44 @@ import {filterObject} from "@/utils/packagingmethod/utils";
 import {PropType} from "vue";
 import {upload_person} from "@/api/glob";
 import {useUserStore} from "@/store";
+
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
-const { t } = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}.json`), 'authorization']);
-const drawer =ref(false)//当前弹框的状态
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}.json`), 'authorization']);
+const drawer = ref(false)//当前弹框的状态
 const rule_form = ref<any>({
-  visitorName:'',
-  visitorSex:1,
-  visitorCompany:'',
-  visitorPhone:'',
-  visitorIdNo:'',
-  visitorEmail:'',
-  visitorPlateNumber:'',
-  visitorFacePicture:'',
-  interviewee:'',
-  visitReason:'',
-  endTimestamp:0,
-  plotId:plotId,
+  visitorName: '',
+  visitorSex: 1,
+  visitorCompany: '',
+  visitorPhone: '',
+  visitorIdNo: '',
+  visitorEmail: '',
+  visitorPlateNumber: '',
+  visitorFacePicture: '',
+  interviewee: '',
+  visitReason: '',
+  endTimestamp: 0,
+  plotId: plotId,
 
 })
 const rule_form_data = ref<any>({
-  visitorName:'',
-  visitorSex:1,
-  visitorCompany:'',
-  visitorPhone:'',
-  visitorIdNo:'',
-  visitorEmail:'',
-  visitorPlateNumber:'',
-  visitorFacePicture:'',
-  interviewee:'',
-  visitReason:'',
-  startTimestamp:0,
-  endTimestamp:0,
-  plotId:plotId,
+  visitorName: '',
+  visitorSex: 1,
+  visitorCompany: '',
+  visitorPhone: '',
+  visitorIdNo: '',
+  visitorEmail: '',
+  visitorPlateNumber: '',
+  visitorFacePicture: '',
+  interviewee: '',
+  visitReason: '',
+  startTimestamp: 0,
+  endTimestamp: 0,
+  plotId: plotId,
 
 })
 const list_picture = ref('')
-const access_date =ref([1704038400000,2082643200000])
+const access_date = ref([1704038400000, 2082643200000])
 const rules = computed<FormRules>(() => ({
   visitorName: [
     {required: true, message: t('姓名') + t('不能为空'), trigger: 'blur'},
@@ -200,10 +201,10 @@ const rules = computed<FormRules>(() => ({
     {required: true, message: t('通行照片') + t('不能为空'), trigger: 'blur'},
   ],
   visitorPhone: [
-    { validator: validatePhoneNumber, trigger: 'blur' }
+    {validator: validatePhoneNumber, trigger: 'blur'}
   ],
   visitorIdNo: [
-    { validator: validateIDCard, trigger: 'blur' }
+    {validator: validateIDCard, trigger: 'blur'}
   ],
 
 }));
@@ -211,33 +212,33 @@ const rule_ref = ref<FormInstance>(); //拿到当前ref实力
 
 const props = defineProps({  //父组件爱你传递过来的弹框状态
   list_dia: {
-    type:  Boolean as PropType<boolean>,
+    type: Boolean as PropType<boolean>,
     default: false
   },
-  show_status:{
-    type:String as  PropType<string>,
-    default:''
+  show_status: {
+    type: String as PropType<string>,
+    default: ''
   },
-  editDate:{
-    type:  Object as PropType<object>,
+  editDate: {
+    type: Object as PropType<object>,
     default: {}
   }
 })
 const emit = defineEmits();   //定义子组件传递方法
 //选择图片调用组建 返回
-const handle_update = (date,val)=>{
-  console.log(val,'--val')
+const handle_update = (date, val) => {
+  console.log(val, '--val')
   rule_form.value.visitorFacePicture = val.id
 }
 
 //抽屉取消
-const handle_cancel = ()=>{
+const handle_cancel = () => {
   console.log('取消')
   drawer.value = false
-  emit("save_list", drawer.value,'cancel');
+  emit("save_list", drawer.value, 'cancel');
 }
-const handle_save = ()=>{
-  rule_ref.value?.validate( (valid:any, fields:any) => {
+const handle_save = () => {
+  rule_ref.value?.validate((valid: any, fields: any) => {
     if (valid) {
       rule_form.value.startTimestamp = access_date.value[0]
       rule_form.value.endTimestamp = access_date.value[1]
@@ -245,36 +246,36 @@ const handle_save = ()=>{
       list_picture.value = ''
 
       drawer.value = false
-      emit("save_list", drawer.value,'save',rule_form.value);
+      emit("save_list", drawer.value, 'save', rule_form.value);
     } else {
       console.log('提交错误', fields);
     }
   });
 
 }
-const init_edit =async ()=>{
-  if ( rule_form.value.visitorFacePicture !==null){
-    const res =await upload_person(rule_form.value.visitorFacePicture)
+const init_edit = async () => {
+  if (rule_form.value.visitorFacePicture !== null) {
+    const res = await upload_person(rule_form.value.visitorFacePicture)
     var ipAddress = window.location.host
-    list_picture.value =`http://${ipAddress}/operation/cloud/web/sys/api/v1/attachment/actions/download?file_id=${rule_form.value.visitorFacePicture} `
-    console.log(list_picture.value,'--person_Picture.value')
-  }else {
-    list_picture.value =''
+    list_picture.value = `http://${ipAddress}/operation/cloud/web/sys/api/v1/attachment/actions/download?file_id=${rule_form.value.visitorFacePicture} `
+    console.log(list_picture.value, '--person_Picture.value')
+  } else {
+    list_picture.value = ''
   }
 
 }
-watch([() => props.show_status,  ()=>props.editDate],
-    async ([new_status,new_editDate]) => {
-      console.log(new_editDate,'--new_editDate')
-      if (new_status === 'add'){
+watch([() => props.show_status, () => props.editDate],
+    async ([new_status, new_editDate]) => {
+      console.log(new_editDate, '--new_editDate')
+      if (new_status === 'add') {
         rule_form.value = JSON.parse(JSON.stringify(rule_form_data.value))
-        list_picture.value =''
-        access_date.value =[1704038400000,2082643200000]
-      }else {
+        list_picture.value = ''
+        access_date.value = [1704038400000, 2082643200000]
+      } else {
         rule_form.value = JSON.parse(JSON.stringify(new_editDate))
-        access_date.value[0] =   rule_form.value.startTimestamp
-        access_date.value[1] =   rule_form.value.endTimestamp
-        console.log( access_date.value,'-- access_date.value')
+        access_date.value[0] = rule_form.value.startTimestamp
+        access_date.value[1] = rule_form.value.endTimestamp
+        console.log(access_date.value, '-- access_date.value')
         await init_edit()
 
       }
@@ -282,8 +283,7 @@ watch([() => props.show_status,  ()=>props.editDate],
 </script>
 
 
-
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .drawer {
   .drawer_header {
     font-size: 18px;
@@ -296,15 +296,18 @@ watch([() => props.show_status,  ()=>props.editDate],
     margin: -20px 0 16px 0;
     width: 100%;
   }
+
   .form_css {
     .form_text {
       font-size: 16px;
       color: #333333;
       font-weight: 700;
     }
+
     .visitor {
       display: flex;
       padding: 30px 0;
+
       .visitor_left {
         flex: 1;
       }
@@ -313,12 +316,15 @@ watch([() => props.show_status,  ()=>props.editDate],
         flex: 1;
       }
     }
+
     .accessing {
       display: flex;
       padding-top: 20px;
+
       .accessing_left {
         flex: 1;
       }
+
       .accessing_right {
         flex: 1;
       }

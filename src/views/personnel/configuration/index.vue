@@ -4,19 +4,19 @@
       <div class="company">公司/部门管理</div>
       <div class="company_name">
         <div class="name">
-          <div class="name_left">{{depart_name.slice(0,1)}}</div>
-          <div class="depart_name">{{depart_name}}</div>
+          <div class="name_left">{{ depart_name.slice(0, 1) }}</div>
+          <div class="depart_name">{{ depart_name }}</div>
         </div>
-<!--        <img class="custom_image" src="@/assets/images/png/add.png" style="cursor: pointer" @click="handle_add">-->
+        <!--        <img class="custom_image" src="@/assets/images/png/add.png" style="cursor: pointer" @click="handle_add">-->
       </div>
       <div class="tree">
         <el-tree
             :data="departmental_date"
+            :default-expand-all=true
+            :highlight-current="true"
             :props="defaultProps"
             class="full-height"
             @node-click="handleNodeClick"
-            :default-expand-all =true
-            :highlight-current="true"
         >
           <template #default="{ node, data }">
 
@@ -62,10 +62,10 @@
     </div>
     <div class="right">
       <person_table
-          :title="configuration"
-          @save="handle_person"
-          :treeNode="tree_node"
           :parent_path="parentPath"
+          :title="configuration"
+          :treeNode="tree_node"
+          @save="handle_person"
       ></person_table>
     </div>
   </div>
@@ -81,11 +81,10 @@ import {message} from "@/utils/components/message";
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'person_table']);
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
-console.log(plotId,'--plotId')
-const depart_name =computed(()=>UserStore.user.plotName)
-console.log(depart_name,'--depart_name')
+console.log(plotId, '--plotId')
+const depart_name = computed(() => UserStore.user.plotName)
+console.log(depart_name, '--depart_name')
 const parentPath = ref('/0/')
-
 
 
 const departmental_date = ref([])
@@ -108,13 +107,13 @@ const defaultProps = {
 
 //点击tree
 const handleNodeClick = (data: any) => {
-  console.log(data,'--data')
+  console.log(data, '--data')
   tree_node.value = data.id
   parentPath.value = data.parentPath
 }
 const handleCommand = (command: string, data: any) => {
   console.log('Command:', command);
-  if (command === 'add'){
+  if (command === 'add') {
     ElMessageBox.prompt(t('请输入部门名称'), t('创建部门'), {
       confirmButtonText: t('确认'),
       cancelButtonText: t('取消'),
@@ -123,13 +122,13 @@ const handleCommand = (command: string, data: any) => {
     })
         .then(async ({value}) => {
           await handle_add_department(data.id, value)
-          await handle_department( plotId)//获取初始部门列表
+          await handle_department(plotId)//获取初始部门列表
         })
         .catch(() => {
           message(t('取消添加部门'), {type: 'error'})
 
         })
-  }else if (command === 'edit'){
+  } else if (command === 'edit') {
     ElMessageBox.prompt(t('请输入部门名称'), t('编辑部门'), {
       confirmButtonText: t('确认'),
       cancelButtonText: t('取消'),
@@ -138,15 +137,15 @@ const handleCommand = (command: string, data: any) => {
     })
         .then(async ({value}) => {
           await handle_edit_department(data.id, value)
-          await handle_department( plotId)//获取初始部门列表
+          await handle_department(plotId)//获取初始部门列表
         })
         .catch(() => {
           message(t('取消编辑部门'), {type: 'error'})
         })
-  }else {
+  } else {
     ElMessageBox.confirm(
         data.name + t('将被删除，下挂人员将一并删除，是否确认?'),
-       t('删除部门'),
+        t('删除部门'),
         {
           confirmButtonText: t('确认'),
           cancelButtonText: t('取消'),
@@ -154,8 +153,8 @@ const handleCommand = (command: string, data: any) => {
         }
     )
         .then(async () => {
-         await  handle_del_department(data.id)
-          await handle_department( plotId)//获取初始部门列表
+          await handle_del_department(data.id)
+          await handle_department(plotId)//获取初始部门列表
         })
         .catch(() => {
           message(t('取消删除部门'), {type: 'error'})
@@ -167,22 +166,22 @@ const handleCommand = (command: string, data: any) => {
 }
 //初始化获取部门列表
 const handle_department = async (plotId: any) => {
-  const res = await actions_list( plotId)
+  const res = await actions_list(plotId)
   if (res.data.code === 200) {
     departmental_date.value = res.data.data
     console.log(departmental_date.value, '-- departmental_date.value')
-   tree_node.value =   departmental_date.value[0].id
-    console.log( tree_node.value,'-- tree_node.value')
+    tree_node.value = departmental_date.value[0].id
+    console.log(tree_node.value, '-- tree_node.value')
   }
 }
 const handle_del_department = async (id: number) => {
   const res = await department_del({
     id: id,
   })
-  if(res.data.code === 200) {
-    message(t('删除成功'),{type:'success'})
-  }else {
-    message(res.data.message,{type:'error'})
+  if (res.data.code === 200) {
+    message(t('删除成功'), {type: 'success'})
+  } else {
+    message(res.data.message, {type: 'error'})
   }
 }
 const handle_edit_department = async (id: number, name: string) => {
@@ -192,10 +191,10 @@ const handle_edit_department = async (id: number, name: string) => {
     name: name,
     type: 4
   })
-  if(res.data.code === 200) {
-    message(t('编辑成功'),{type:'success'})
-  }else {
-    message(res.data.message,{type:'error'})
+  if (res.data.code === 200) {
+    message(t('编辑成功'), {type: 'success'})
+  } else {
+    message(res.data.message, {type: 'error'})
   }
 }
 //新增部门组织
@@ -206,10 +205,10 @@ const handle_add_department = async (parentId: number, name: string) => {
     name: name,
     type: 4
   })
-  if(res.data.code === 200) {
-    message(t('添加成功'),{type:'success'})
-  }else {
-    message(res.data.message,{type:'error'})
+  if (res.data.code === 200) {
+    message(t('添加成功'), {type: 'success'})
+  } else {
+    message(res.data.message, {type: 'error'})
   }
 }
 const handle_add = async () => {
@@ -221,7 +220,7 @@ const handle_add = async () => {
   })
       .then(async ({value}) => {
         await handle_add_department(plotId, value)
-        await handle_department( plotId)//获取初始部门列表
+        await handle_department(plotId)//获取初始部门列表
       })
       .catch(() => {
         message(t('取消添加部门'), {type: 'error'})
@@ -230,7 +229,7 @@ const handle_add = async () => {
 
 
 onMounted(() => {
-  handle_department( plotId)//获取初始部门列表
+  handle_department(plotId)//获取初始部门列表
 
 })
 </script>
@@ -271,6 +270,7 @@ onMounted(() => {
       .name {
         display: flex;
         padding-left: 40px;
+
         .name_left {
           width: 20px;
           height: 20px;
@@ -281,6 +281,7 @@ onMounted(() => {
           justify-content: center; /* 添加此行 */
           align-items: center; /* 添加此行 */
         }
+
         .depart_name {
           padding-left: 10px;
         }
@@ -353,7 +354,8 @@ onMounted(() => {
     height: 20px;
   }
 }
-:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content)  {
+
+:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) {
   background-color: #FFEAEB !important;
   color: #D42A30;
 }

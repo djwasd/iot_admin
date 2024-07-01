@@ -2,9 +2,9 @@
   <div>
     <el-dialog
         v-model="dialog_visible"
+        :before-close="handle_close"
         class="dialog_css"
         width="700"
-        :before-close="handle_close"
     >
       <template #header>
         <div class="dialog_header">
@@ -15,7 +15,7 @@
       <div class="person">
         <div class="function">
           <div class="function_left">
-            <el-button > {{ t('全选') }}</el-button>
+            <el-button> {{ t('全选') }}</el-button>
           </div>
           <div class="function_right">
             <div class="search-wrapper">
@@ -36,9 +36,9 @@
           <el-table
               ref="multiple_Ref"
               :data="device_list.records"
+              :row-key="getRowKey"
               style="width: 100%"
               @selection-change="handleSelectionChange"
-              :row-key="getRowKey"
 
           >
             <el-table-column
@@ -52,9 +52,9 @@
                 type="index"
                 width="80">
             </el-table-column>
-            <el-table-column prop="deviceName" show-overflow-tooltip :label="t('设备')+t('名称')" />
-            <el-table-column prop="serialNo" show-overflow-tooltip :label="t('设备序列号')" />
-            <el-table-column prop="address"  show-overflow-tooltip :label="t('设备位置')" />
+            <el-table-column :label="t('设备')+t('名称')" prop="deviceName" show-overflow-tooltip/>
+            <el-table-column :label="t('设备序列号')" prop="serialNo" show-overflow-tooltip/>
+            <el-table-column :label="t('设备位置')" prop="address" show-overflow-tooltip/>
 
           </el-table>
         </div>
@@ -62,8 +62,8 @@
           <el-pagination
               v-model:current-page="current_page"
               v-model:page-size="page_size"
-              layout="prev, pager, next, jumper"
               :total="device_list.total"
+              layout="prev, pager, next, jumper"
               @current-change="handleCurrentChange"
           />
 
@@ -72,24 +72,25 @@
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="handle_close">{{t('取消')}}</el-button>
-          <el-button type="primary" @click="handle_save">{{t('确认')}}</el-button>
+          <el-button @click="handle_close">{{ t('取消') }}</el-button>
+          <el-button type="primary" @click="handle_save">{{ t('确认') }}</el-button>
         </div>
       </template>
     </el-dialog>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {useLocalesI18n} from "@/locales/hooks";
 import {attendance_GroupDevice} from "@/api/attendance";
 import {useUserStore} from "@/store";
 import {PropType} from "vue";
-const { t } = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}.json`), 'person_table']);
+
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}.json`), 'person_table']);
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
 const dialog_visible = ref(false)
-const device_type=ref('device/master/AccessController')
+const device_type = ref('device/master/AccessController')
 const search_person = ref<string>('')
 const attendanceRuleId = ref('') //当前考勤规则id
 const multiple_Ref = ref() //当前table组建的实例
@@ -98,106 +99,105 @@ const edit_selection = ref<any>()
 
 const props = defineProps({  //父组件爱你传递过来的弹框状态
   equipment_dia: {
-    type:  Boolean as PropType<boolean>,
+    type: Boolean as PropType<boolean>,
     default: false
   },
-  status:{
+  status: {
     type: String as PropType<string>,
     default: '',
   },
-  data:{
+  data: {
     type: Array as PropType<any>,
     default: [],
   },
-  id:{
+  id: {
     type: String as PropType<string>,
     default: '',
   }
 })
 const device_list = ref({
-  records:[],
-  total:0
+  records: [],
+  total: 0
 })
 const current_page = ref(0);//当前页数
 const page_size = ref(12); //每页显示条目个数
 const emit = defineEmits();   //定义子组件传递方法
 const multipleSelection = ref([]) //选中的人数 可以考虑只传id
 //拿到当前列表的序号
-const set_index = (index)=>{
-  if (current_page.value >=1){
-    return (current_page.value -1) * page_size.value + index + 1
+const set_index = (index) => {
+  if (current_page.value >= 1) {
+    return (current_page.value - 1) * page_size.value + index + 1
 
-  }else  {
-    return (current_page.value ) * page_size.value + index + 1
+  } else {
+    return (current_page.value) * page_size.value + index + 1
 
   }
 }
-const getRowKey = (row:any)=>{
+const getRowKey = (row: any) => {
   return row.id
 }
-const handleSelectionChange = (val:any) => {
-  multipleSelection.value =val.map(item => ({ "deviceId": item.deviceId ,'devicePath':item.devicePath}));
-  console.log( multipleSelection.value,'-- multipleSelection.value')
+const handleSelectionChange = (val: any) => {
+  multipleSelection.value = val.map(item => ({"deviceId": item.deviceId, 'devicePath': item.devicePath}));
+  console.log(multipleSelection.value, '-- multipleSelection.value')
 
 }
 
 const handle_close = () => {
   console.log('取消')
   dialog_visible.value = false
-  emit("save_equipment_dia", dialog_visible.value,'cancel');
+  emit("save_equipment_dia", dialog_visible.value, 'cancel');
 
 }
-const handle_save = ()=>{
+const handle_save = () => {
   console.log('确认')
   dialog_visible.value = false
-  emit("save_equipment_dia", dialog_visible.value,'save',multipleSelection.value);
+  emit("save_equipment_dia", dialog_visible.value, 'save', multipleSelection.value);
 }
-const handleCurrentChange = (val:number) => {
+const handleCurrentChange = (val: number) => {
   current_page.value = val;
-  attendance_device_all(plotId,current_page.value,page_size.value,device_type.value,true,'',search_person.value)
-  toggleSelection(edit_selection.value,new_status.value)
+  attendance_device_all(plotId, current_page.value, page_size.value, device_type.value, true, '', search_person.value)
+  toggleSelection(edit_selection.value, new_status.value)
 
 };
 //搜索
 const handle_search = () => {
   console.log('搜素',)
-  attendance_device_all(plotId,0,page_size.value,device_type.value,true,'',search_person.value)
+  attendance_device_all(plotId, 0, page_size.value, device_type.value, true, '', search_person.value)
 }
 //获取所有数据
-const attendance_device_all =async (
-    plotId:number,
-    page:any,
-    size:any,
-    deviceType:string,
-    isExcludeAddedAttendanceRuleDevice:boolean,
-    attendanceRuleId?:string,
-    serialNo?:string
-)=>{
-  const res =await attendance_GroupDevice(plotId,page,size,deviceType,isExcludeAddedAttendanceRuleDevice,attendanceRuleId,serialNo)
-  if (res.data.code === 200){
+const attendance_device_all = async (
+    plotId: number,
+    page: any,
+    size: any,
+    deviceType: string,
+    isExcludeAddedAttendanceRuleDevice: boolean,
+    attendanceRuleId?: string,
+    serialNo?: string
+) => {
+  const res = await attendance_GroupDevice(plotId, page, size, deviceType, isExcludeAddedAttendanceRuleDevice, attendanceRuleId, serialNo)
+  if (res.data.code === 200) {
     device_list.value = res.data.data
   }
 }
-const toggleSelection = (list:any,status:string)=>{
+const toggleSelection = (list: any, status: string) => {
 
-  if (multiple_Ref.value){
-    if (status === 'add'){
-      if (list.length !==0){
+  if (multiple_Ref.value) {
+    if (status === 'add') {
+      if (list.length !== 0) {
         let filter_data = device_list.value.records.filter(itemB => list.some(itemA => itemA.deviceId === itemB.deviceId));
-        filter_data.forEach((row:any)=>{
+        filter_data.forEach((row: any) => {
           multiple_Ref.value.toggleRowSelection(row, true); // 默认勾选
         })
-      }else {
+      } else {
         device_list.value.records.forEach((row: any) => {
           multiple_Ref.value.toggleRowSelection(row, false); // 默认勾选
         })
       }
 
 
-    }
-    else  {
+    } else {
       let filter_data = device_list.value.records.filter(v => list.some(itemA => itemA.deviceId == v.deviceId));
-      filter_data.forEach((row:any)=>{
+      filter_data.forEach((row: any) => {
         multiple_Ref.value.toggleRowSelection(row, true); // 默认勾选
       })
     }
@@ -205,15 +205,15 @@ const toggleSelection = (list:any,status:string)=>{
   }
 }
 
-watch([() => props.equipment_dia,()=>props.status,()=>props.data,()=>props.id],
-    async  ([newDia, newStatus, newData]) => {
+watch([() => props.equipment_dia, () => props.status, () => props.data, () => props.id],
+    async ([newDia, newStatus, newData]) => {
       dialog_visible.value = newDia
       new_status.value = newStatus
       if (newStatus === 'add') {
         attendanceRuleId.value = ''
         edit_selection.value = newData
-        console.log( attendanceRuleId.value,'---aaaaaaaaaa')
-      await  attendance_device_all(
+        console.log(attendanceRuleId.value, '---aaaaaaaaaa')
+        await attendance_device_all(
             plotId,
             current_page.value,
             page_size.value,
@@ -228,15 +228,15 @@ watch([() => props.equipment_dia,()=>props.status,()=>props.data,()=>props.id],
       } else {
         edit_selection.value = newData  //当前的数据
         attendanceRuleId.value = props.id  //考勤规则id
-         await attendance_device_all(
-        plotId,
-        current_page.value,
-        page_size.value,
-        device_type.value,
-        true,
-        attendanceRuleId.value,
-        search_person.value
-    )
+        await attendance_device_all(
+            plotId,
+            current_page.value,
+            page_size.value,
+            device_type.value,
+            true,
+            attendanceRuleId.value,
+            search_person.value
+        )
         toggleSelection(edit_selection.value, newStatus)
         multipleSelection.value = newData
 
@@ -249,24 +249,28 @@ watch([() => props.equipment_dia,()=>props.status,()=>props.data,()=>props.id],
 );
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .dialog_css {
   .dialog_header {
     font-size: 18px;
     color: #333333;
     width: 100%;
   }
+
   .form {
     padding-top: 30px;
+
     .form_icon {
       padding: 0 20px 0 10px;
     }
+
     .form_minus {
-      padding-left: 10px ;
+      padding-left: 10px;
     }
   }
 
 }
+
 .person {
   width: 100%;
   //padding: 16px;
@@ -365,6 +369,7 @@ watch([() => props.equipment_dia,()=>props.status,()=>props.data,()=>props.id],
         color: #ffffff
       }
     }
+
     .equipment_box {
       display: inline-flex;
       flex-wrap: wrap;
@@ -374,7 +379,6 @@ watch([() => props.equipment_dia,()=>props.status,()=>props.data,()=>props.id],
         width: 100%;
       }
     }
-
 
 
   }

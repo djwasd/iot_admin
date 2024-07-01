@@ -2,7 +2,7 @@
   <el-card class="top_content">
     <div class="title">今日考勤</div>
     <div class="content">
-      <mEcharts class="echarts" :options="state.options" :height="state.height" :width="state.width"></mEcharts>
+      <mEcharts :height="state.height" :options="state.options" :width="state.width" class="echarts"></mEcharts>
 
 
     </div>
@@ -12,21 +12,22 @@
 
 </template>
 
-<script setup lang="ts" name="top_content">
-import  mEcharts from '@/common/echartsCustom/EchartsCustom.vue'
-import {reactive, shallowReactive} from "vue";
+<script lang="ts" name="top_content" setup>
+import mEcharts from '@/common/echartsCustom/EchartsCustom.vue'
+import {shallowReactive} from "vue";
 import {useLocalesI18n} from "@/locales/hooks";
-const { t } = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'top_right']);
+
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'top_right']);
 
 const state = shallowReactive({
-  height:'200px',
-  width:'500px',
+  height: '200px',
+  width: '500px',
   options: {
     tooltip: {
       trigger: 'item'
     },
     legend: {
-      orient:"vertical",
+      orient: "vertical",
       left: '50%',
       top: 'center',
       itemGap: 10,
@@ -64,12 +65,12 @@ const state = shallowReactive({
         },
         center: ['20%', '50%'], // 调整水平偏移量
         data: [
-          { value: 1048, name: '已打卡' },
-          { value: 735, name: '未打卡' },
-          { value: 580, name: '迟到' },
-          { value: 484, name: '早退' },
-          { value: 300, name: '异常考勤' },
-          { value: 300, name: '抽烟' }
+          {value: 1048, name: '已打卡'},
+          {value: 735, name: '未打卡'},
+          {value: 580, name: '迟到'},
+          {value: 484, name: '早退'},
+          {value: 300, name: '异常考勤'},
+          {value: 300, name: '抽烟'}
         ]
       }
     ]
@@ -78,7 +79,7 @@ const state = shallowReactive({
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .top_content {
   width: 100%;
   height: 260px;

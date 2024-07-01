@@ -21,20 +21,20 @@
       >
         <el-form-item :label="t('班次名称')" class="form_item" prop="name">
           <el-input
-              style="width: 220px"
               v-model="shift_list.name"
               autocomplete="off"
               clearable
+              style="width: 220px"
           >
           </el-input>
         </el-form-item>
 
 
         <el-form-item :label="t('上班时间')" class="form_item" prop="startTime">
-          <el-time-picker v-model="shift_list.startTime"  value-format="x" />
+          <el-time-picker v-model="shift_list.startTime" value-format="x"/>
         </el-form-item>
         <el-form-item :label="t('下班时间')" class="form_item" prop="endTime">
-          <el-time-picker v-model="shift_list.endTime" value-format="x"    />
+          <el-time-picker v-model="shift_list.endTime" value-format="x"/>
         </el-form-item>
 
       </el-form>
@@ -55,12 +55,7 @@ import {FormInstance, FormRules} from "element-plus";
 import {message} from "@/utils/components/message";
 import {attendance_shift} from "@/api/attendance";
 import {useUserStore} from "@/store";
-import {
-  convertArrayToTimestamps,
-  convertTimeToTimestamp, format_time,
-  formatendTime,
-  formatstartTime
-} from "@/utils/packagingmethod/time";
+import {format_time} from "@/utils/packagingmethod/time";
 
 const shift_ref = ref<FormInstance>(); //拿到当前ref实力
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}.json`), 'person_table']);
@@ -78,20 +73,21 @@ interface RuleForm {
   name: string,
   startTime: any
   endTime: any
-  plotId:any
+  plotId: any
 
 }
+
 const shift_list = ref<RuleForm>({
   name: '',
   startTime: null,
-  endTime:null,
-  plotId:plotId
+  endTime: null,
+  plotId: plotId
 })
 const shift_list_date = ref<RuleForm>({
   name: '',
   startTime: null,
-  endTime:null,
-  plotId:plotId
+  endTime: null,
+  plotId: plotId
 
 })
 
@@ -129,36 +125,36 @@ const handle_close = () => {
   emit("save_shift_dialog", dialog_visible.value, 'cancel');
 
 }
-const attendance_add =async (data:any) => {
+const attendance_add = async (data: any) => {
   const res = await attendance_shift(data)
-  if (res.data.code ===200){
-    message(t('添加班次')+t('成功'),{type:'success'})
-  }else {
-    message(res.data.message,{type:'error'})
+  if (res.data.code === 200) {
+    message(t('添加班次') + t('成功'), {type: 'success'})
+  } else {
+    message(res.data.message, {type: 'error'})
   }
 }
 const handle_save = () => {
-  shift_ref.value?.validate( (valid:any, fields:any) => {
+  shift_ref.value?.validate((valid: any, fields: any) => {
     if (valid) {
-      if ( shift_list.value.startTime> shift_list.value.endTime){
-           message(t('上班时间不能大于下班时间'),{type:'error'})
+      if (shift_list.value.startTime > shift_list.value.endTime) {
+        message(t('上班时间不能大于下班时间'), {type: 'error'})
         return true
       }
       console.log('确认')
-      console.log(shift_list.value,'--shift_list.value')
+      console.log(shift_list.value, '--shift_list.value')
 
       shift_list.value.startTime = format_time(shift_list.value.startTime)
       shift_list.value.endTime = format_time(shift_list.value.endTime)
       attendance_add(shift_list.value)
 
-      console.log(shift_list.value,'--shift_list.value')
+      console.log(shift_list.value, '--shift_list.value')
       dialog_visible.value = false
       emit("save_shift_dialog", dialog_visible.value, 'save');
     } else {
       console.log('提交错误', fields);
     }
 
-})
+  })
 }
 watch(() => props.shift_dialog,
     (newVal) => {
@@ -174,6 +170,7 @@ watch(() => props.shift_dialog,
     color: #333333;
     width: 100%;
   }
+
   .dialog_buttom {
     height: 1px;
     border: 1px solid #A3A6AD;

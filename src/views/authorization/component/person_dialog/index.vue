@@ -1,12 +1,10 @@
-
-
 <template>
   <div>
     <el-dialog
         v-model="dialog_visible"
+        :before-close="handle_close"
         class="dialog_css"
         width="900"
-        :before-close="handle_close"
     >
       <template #header>
         <div class="dialog_header">
@@ -15,21 +13,21 @@
         <div class="dialog_buttom"></div>
         <div class="container">
           <div class="left">
-            <div class="company">{{t('部门选择')}}</div>
+            <div class="company">{{ t('部门选择') }}</div>
             <div class="company_name">
               <div class="name">
-                <div class="depart_name" >{{t('所有人员')}}          {{personnel_date.total}}</div>
+                <div class="depart_name">{{ t('所有人员') }} {{ personnel_date.total }}</div>
               </div>
               <!--        <img class="custom_image" src="@/assets/images/png/add.png" style="cursor: pointer" @click="handle_add">-->
             </div>
             <div class="tree">
               <el-tree
                   :data="departmental_date"
+                  :default-expand-all=true
+                  :highlight-current="true"
                   :props="defaultProps"
                   class="full-height"
                   @node-click="handleNodeClick"
-                  :default-expand-all =true
-                  :highlight-current="true"
               >
                 <template #default="{ node, data }">
 
@@ -57,7 +55,7 @@
                       :placeholder="t('请输入姓名或ID')"
                   >
                     <template #append>
-                      <el-button @click="handle_search" icon="mel-icon-search" />
+                      <el-button icon="mel-icon-search" @click="handle_search"/>
                     </template>
                   </el-input>
                 </div>
@@ -65,12 +63,12 @@
             </div>
             <div class="table-wrapper">
               <el-table
+                  ref="multiple_Ref"
                   :data="personnel_date.records"
                   style="width: 100%"
-                  ref="multiple_Ref"
                   @selection-change="handleSelectionChange"
               >
-                <el-table-column fixed type="selection" width="80" />
+                <el-table-column fixed type="selection" width="80"/>
                 <el-table-column
                     :index="set_index"
                     :label="t('序号')"
@@ -79,42 +77,41 @@
                     width="80"
                 >
                 </el-table-column>
-                <el-table-column prop="id" label="ID"  />
-                <el-table-column prop="name" :label="t('姓名')"  />
-                <el-table-column prop="state" :label="t('卡号')" />
+                <el-table-column label="ID" prop="id"/>
+                <el-table-column :label="t('姓名')" prop="name"/>
+                <el-table-column :label="t('卡号')" prop="state"/>
               </el-table>
             </div>
             <div class="pagination">
               <el-pagination
                   v-model:current-page="current_page"
                   v-model:page-size="page_size"
-                  layout="prev, pager, next, jumper"
                   :total="personnel_date.total"
+                  layout="prev, pager, next, jumper"
                   @current-change="handleCurrentChange"
               />
-          </div>
+            </div>
           </div>
         </div>
       </template>
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="handle_close">{{t('取消')}}</el-button>
-          <el-button type="primary" @click="handle_save">{{t('确认')}}</el-button>
+          <el-button @click="handle_close">{{ t('取消') }}</el-button>
+          <el-button type="primary" @click="handle_save">{{ t('确认') }}</el-button>
         </div>
       </template>
     </el-dialog>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {useLocalesI18n} from "@/locales/hooks";
 import {personnel_groupList} from "@/api/authorization";
 import {actions_list} from "@/api/person";
 import {useUserStore} from "@/store";
-import {message} from "@/utils/components/message";
 
-const { t } = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}.json`), 'person_table']);
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}.json`), 'person_table']);
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
 const dialog_visible = ref(false)
@@ -122,7 +119,7 @@ const parentPath = ref('/0/')  //
 const tree_node = ref('0')//当前数id 默认是组织id总的
 const props = defineProps({  //父组件爱你传递过来的弹框状态
   dialog: {
-    type:  Boolean as PropType<boolean>,
+    type: Boolean as PropType<boolean>,
     default: false
   },
 })
@@ -133,7 +130,7 @@ const defaultProps = {
 }
 const emit = defineEmits();   //定义子组件传递方法
 const departmental_date = ref([])//初始化部门列表
-const  personnel_date = ref({
+const personnel_date = ref({
   "records": [
 
     {
@@ -173,94 +170,95 @@ const  personnel_date = ref({
 const multipleSelection = ref([])  //点击多选框 拿到当前选中的table列
 const current_page = ref(0);//当前页数
 const page_size = ref(10); //每页显示条目个数
-const select_all =ref<boolean>(false) //是否全选
+const select_all = ref<boolean>(false) //是否全选
 const multiple_Ref = ref() //当前table组建的实例
 const search_person = ref<string>('')//搜索
 
 //全部选中
-const handle_all = ()=>{
+const handle_all = () => {
   select_all.value = !select_all.value
-  if (select_all.value){
+  if (select_all.value) {
     multiple_Ref.value.toggleAllSelection()
-  }else  {
+  } else {
     multiple_Ref.value.clearSelection()
 
   }
 }
 
 //搜索
-const handle_search =async ()=>{
+const handle_search = async () => {
 
-  await personnel_list_all(tree_node.value, 0, page_size.value, 1,parentPath.value,search_person.value)
+  await personnel_list_all(tree_node.value, 0, page_size.value, 1, parentPath.value, search_person.value)
 }
-const set_index = (index)=>{
-  if (current_page.value >=1){
-    return (current_page.value -1) * page_size.value + index + 1
+const set_index = (index) => {
+  if (current_page.value >= 1) {
+    return (current_page.value - 1) * page_size.value + index + 1
 
-  }else  {
-    return (current_page.value ) * page_size.value + index + 1
+  } else {
+    return (current_page.value) * page_size.value + index + 1
 
   }
 }
 //切换分页
-const handleCurrentChange = (val:number) => {
+const handleCurrentChange = (val: number) => {
   current_page.value = val;
-  select_all.value =false
-   personnel_list_all(tree_node.value, val, page_size.value, 1,parentPath.value, search_person.value)
+  select_all.value = false
+  personnel_list_all(tree_node.value, val, page_size.value, 1, parentPath.value, search_person.value)
 };
 //点击table选择框
-const handleSelectionChange = (val:any) => {
-  multipleSelection.value =val.map(item => item.id);
-  console.log(  multipleSelection.value,'--  multipleSelection.value')
+const handleSelectionChange = (val: any) => {
+  multipleSelection.value = val.map(item => item.id);
+  console.log(multipleSelection.value, '--  multipleSelection.value')
 }
 const handle_close = () => {
   dialog_visible.value = false
-  emit("save_dialog", dialog_visible.value,'cancel');
+  emit("save_dialog", dialog_visible.value, 'cancel');
 }
 //点击树拿到需要的信息
 const handleNodeClick = (data: any) => {
   tree_node.value = data.id
   parentPath.value = data.parentPath
-   personnel_list_all(tree_node.value, current_page.value, page_size.value, 1,parentPath.value)
+  personnel_list_all(tree_node.value, current_page.value, page_size.value, 1, parentPath.value)
 
 }
-const handle_save = ()=>{
+const handle_save = () => {
   dialog_visible.value = false
-  emit("save_dialog", dialog_visible.value,'save',multipleSelection.value);
+  emit("save_dialog", dialog_visible.value, 'save', multipleSelection.value);
 
 }
 //初始化获取部门列表
 const handle_department = async (plotId: any) => {
-  const res = await actions_list( plotId)
+  const res = await actions_list(plotId)
   if (res.data.code === 200) {
     departmental_date.value = res.data.data
-    tree_node.value =   departmental_date.value[0].id
+    tree_node.value = departmental_date.value[0].id
   }
 }
-const personnel_list_all = async (organizationId:any, page:number, size:number,status:number, parentPath:string, name?:string) => {
-  const res = await personnel_groupList(organizationId, page, size, status, parentPath,true, name);
+const personnel_list_all = async (organizationId: any, page: number, size: number, status: number, parentPath: string, name?: string) => {
+  const res = await personnel_groupList(organizationId, page, size, status, parentPath, true, name);
   if (res.data.code === 200) {
     personnel_date.value = res.data.data;
   }
 }
-watch( () => props.dialog,
-  async  (newVal) => {
+watch(() => props.dialog,
+    async (newVal) => {
       dialog_visible.value = newVal
-      await  handle_department( plotId)//获取初始部门列表
-      await personnel_list_all(tree_node.value, current_page.value, page_size.value, 1,parentPath.value)
+      await handle_department(plotId)//获取初始部门列表
+      await personnel_list_all(tree_node.value, current_page.value, page_size.value, 1, parentPath.value)
 
 
     });
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .dialog_css {
   .dialog_header {
     font-size: 18px;
     color: #333333;
     width: 100%;
   }
+
   .dialog_buttom {
     height: 1px;
     border: 1px solid #A3A6AD;
@@ -268,11 +266,13 @@ watch( () => props.dialog,
     width: 100%;
 
   }
-  .container{
+
+  .container {
     display: flex;
     width: 100%;
     height: 60vh;
     background-color: #ffffff;
+
     .left {
       //flex: 1;
       width: 280px;
@@ -303,6 +303,7 @@ watch( () => props.dialog,
         .name {
           display: flex;
           padding-left: 40px;
+
           .name_left {
             width: 20px;
             height: 20px;
@@ -313,6 +314,7 @@ watch( () => props.dialog,
             justify-content: center; /* 添加此行 */
             align-items: center; /* 添加此行 */
           }
+
           .depart_name {
             padding-left: 10px;
           }
@@ -350,18 +352,22 @@ watch( () => props.dialog,
         }
       }
     }
+
     .right {
       flex: 1;
       overflow: hidden;
+
       .function {
 
         padding: 16px 0;
         display: flex;
         justify-content: space-between;
+
         .function_right {
           .search-wrapper {
             position: relative;
             display: inline-block;
+
             .icon {
               position: absolute;
               top: 50%;
@@ -370,10 +376,12 @@ watch( () => props.dialog,
               cursor: pointer;
             }
           }
+
           el-input {
             padding-right: 30px; // 调整输入框的右侧内边距以容纳图标
           }
         }
+
         .function_left {
           .dropdown {
             margin: 0 10px;
@@ -382,6 +390,7 @@ watch( () => props.dialog,
 
 
       }
+
       .pagination {
         padding: 16px 0;
         display: flex;
@@ -390,7 +399,8 @@ watch( () => props.dialog,
     }
   }
 }
-:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content)  {
+
+:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) {
   background-color: #FFEAEB !important;
   color: #D42A30;
 }

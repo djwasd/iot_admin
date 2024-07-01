@@ -1,24 +1,26 @@
 <template>
-  <div class="container_top" ref="container_top_ref">
-    <div class="grid-item" ref="grid_item_ref">
+  <div ref="container_top_ref" class="container_top">
+    <div ref="grid_item_ref" class="grid-item">
       <div class="main">
-        <div class="conter" ref="box">
+        <div ref="box" class="conter">
           <el-row :gutter="10">
             <el-col
                 v-for="(n, index) in state.fornum"
-                style="padding: 1px"
                 :key="index"
-                :xs="24"
-                :sm="24"
-                :md="state.clonum"
-                :lg="state.clonum"
-                :xl="state.clonum"
                 :class="state.videoclass"
+                :lg="state.clonum"
+                :md="state.clonum"
+                :sm="24"
+                :xl="state.clonum"
+                :xs="24"
+                style="padding: 1px"
             >
-              <div class="video-wrapper"  ref="video_box"  :style="state.videoclass" @click="handle_click(n)" :id="`videoid${n}`">
-                <div class="video-inner live hide-waiting" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
+              <div :id="`videoid${n}`" ref="video_box" :style="state.videoclass" class="video-wrapper"
+                   @click="handle_click(n)">
+                <div class="video-inner live hide-waiting"
+                     style="position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
                   <div class="alt">
-                    <div class="talbetop" :class="{ 'active-box': active_box === n }">
+                    <div :class="{ 'active-box': active_box === n }" class="talbetop">
                       <table>
                         <tr>
                           <td>
@@ -26,7 +28,9 @@
                                 :id="`canvas${n}`"
                                 style="display: none"
                             ></canvas>
-                            <video :id="`video${n}`" :class="state.fornum===4?'video_four':state.fornum===9?'video_nine':''"   ref="video" autoplay class="video"></video>
+                            <video :id="`video${n}`"
+                                   ref="video" :class="state.fornum===4?'video_four':state.fornum===9?'video_nine':''"
+                                   autoplay class="video"></video>
                           </td>
                         </tr>
                       </table>
@@ -42,24 +46,22 @@
     <div class="bottom-box">
       <div class="icons-container">
         <img
-            :src="item.icon"
             v-for="(item, index) in icons"
             :key="item.id"
+            :src="item.icon"
             class="icon"
             @click="handleIconClick(item)"
         />
       </div>
-      <div class="screen-icon-container" ref="screen_ref" @click="handle_fullscreen">
-        <me-icon-screen  style="font-size: 1.5em"></me-icon-screen>
+      <div ref="screen_ref" class="screen-icon-container" @click="handle_fullscreen">
+        <me-icon-screen style="font-size: 1.5em"></me-icon-screen>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import WWAVPlayer from '@vanwei-wcs/wwav-player'  //等
+<script lang="ts" setup>
 import a from './01.mp4'
-import b from './02.mp4'
 
 import blue_first from '@/assets/images/png/blue_first.png';
 import blue_four from '@/assets/images/png/blue_four.png';
@@ -67,6 +69,7 @@ import blue_nine from '@/assets/images/png/blue_nine.png';
 import first from '@/assets/images/png/first.png';
 import four from '@/assets/images/png/four.png';
 import nine from '@/assets/images/png/nine.png';
+
 const video_box = ref(null)
 const num = ref(1)
 const active_box = ref() //当前点击的盒子 添加动态class
@@ -76,20 +79,20 @@ const grid_item_ref = ref(null)//视频区域盒子的实例
 const video = ref(null)//视频区域盒子的实例
 const container_top_ref = ref(null)//大盒子的实例
 const props = defineProps({
-  url:{
-      type:  Object as PropType<object>,
-      default: false
+  url: {
+    type: Object as PropType<object>,
+    default: false
   }
 })
 const url_list = ref<any>([])
 const icons = ref([
-  { icon: blue_first, id: 1, active: false, image: blue_first, originalIcon: first,clo:24 },
-  { icon: four, id: 4, active: false, image: blue_four, originalIcon: four,clo:12 },
-  { icon: nine, id: 9, active: false, image: blue_nine, originalIcon: nine,clo:8 },//16分屏clo6 36分屏clo4
+  {icon: blue_first, id: 1, active: false, image: blue_first, originalIcon: first, clo: 24},
+  {icon: four, id: 4, active: false, image: blue_four, originalIcon: four, clo: 12},
+  {icon: nine, id: 9, active: false, image: blue_nine, originalIcon: nine, clo: 8},//16分屏clo6 36分屏clo4
 ]);
-const video_id =ref()
+const video_id = ref()
 const player_ref = ref<any>()
-const canvas_id =ref()
+const canvas_id = ref()
 
 const state = reactive({
   fullscreen: false,
@@ -97,7 +100,7 @@ const state = reactive({
   clonum: 24,
   videoclass: "padding-bottom: 48%; position: relative; margin: 0px auto;",
   items: [false, false, false, false],
-  src:''
+  src: ''
 });
 const handleIconClick = (item) => {
   num.value = item.id
@@ -118,15 +121,15 @@ const handleIconClick = (item) => {
   state.clonum = item.clo;
 
 };
-const handle_click =(num:number)=>{
+const handle_click = (num: number) => {
   const boxInstance = video_box.value; // 获取盒子的实例
   // video_id.value = video.value
   active_box.value = num; // 更新当前活动盒子的编号
-   box_ref.value = `video${num}`; // 获取当前盒子的 id
+  box_ref.value = `video${num}`; // 获取当前盒子的 id
 
 }
 //外部大盒子全屏
-const handle_fullscreen =()=>{
+const handle_fullscreen = () => {
   if (!document.fullscreenElement && !document.mozFullScreenElement &&
       !document.webkitFullscreenElement && !document.msFullscreenElement) {
     if (container_top_ref.value.requestFullscreen) {
@@ -151,17 +154,17 @@ const handle_fullscreen =()=>{
   }
 }
 
-const init_play =()=>{
-    // url_list.value = [...new Set( url_list.value)];
+const init_play = () => {
+  // url_list.value = [...new Set( url_list.value)];
 
-  url_list.value.map((v:any,index:number)=>{
-    video_id.value = document.getElementById(`video${index+1}`);
-    canvas_id.value = document.getElementById(`canvas${index+1}`);
-    console.log(video_id,'--video_id')
-    console.log(canvas_id,'--canvas_id')
-if (video_id.value.src ===''){
-  video_id.value.src = a
-  // video_id.value.src = b
+  url_list.value.map((v: any, index: number) => {
+    video_id.value = document.getElementById(`video${index + 1}`);
+    canvas_id.value = document.getElementById(`canvas${index + 1}`);
+    console.log(video_id, '--video_id')
+    console.log(canvas_id, '--canvas_id')
+    if (video_id.value.src === '') {
+      video_id.value.src = a
+      // video_id.value.src = b
 
 //     console.log('当前地址为空 没有播放')
 //   player_ref.value = new WWAVPlayer({
@@ -181,10 +184,10 @@ if (video_id.value.src ===''){
 //   player_ref.value.on("error", () => {
 //     // handleError()
 //   }, '--2222222');
-  // player_ref.value.open(v.url, v.token);
-  // player_ref.value.open('ws://115.236.167.66:30063/mts/wwav/W811216626vNYoshOCjp8R9V86u1C.wwav', 'e3Vyn4E7');
+      // player_ref.value.open(v.url, v.token);
+      // player_ref.value.open('ws://115.236.167.66:30063/mts/wwav/W811216626vNYoshOCjp8R9V86u1C.wwav', 'e3Vyn4E7');
 
-}
+    }
 
 
   })
@@ -192,19 +195,20 @@ if (video_id.value.src ===''){
 
 watch(() => props.url,
     (newUrl) => {
-      console.log(newUrl,'--newUrl')
+      console.log(newUrl, '--newUrl')
       handle_click(state.fornum)
       url_list.value.unshift(newUrl)
       init_play()
     },
-       {deep:true}
-    )
+    {deep: true}
+)
 </script>
 
-<style scoped lang="scss">
-.video{
-  width:85%;
+<style lang="scss" scoped>
+.video {
+  width: 85%;
 }
+
 //video_four{
 //  width: 660px;
 //}
@@ -294,7 +298,7 @@ watch(() => props.url,
 
 
 .active-box {
- border: 1px solid #333333;
+  border: 1px solid #333333;
 
 }
 </style>

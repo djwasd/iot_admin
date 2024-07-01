@@ -38,13 +38,13 @@
           <div :style="{ backgroundColor: item.backgroundColor }" class="radio"></div>
           <span class="label">{{ item.label }}</span>
         </div>
-          <CountTo
-              :autoplay="true"
-              :duration="3000"
-              :endVal="item.endVal"
-              :startVal="0"
-              class="layout"
-          ></CountTo>
+        <CountTo
+            :autoplay="true"
+            :duration="3000"
+            :endVal="item.endVal"
+            :startVal="0"
+            class="layout"
+        ></CountTo>
       </div>
     </div>
   </el-card>
@@ -52,6 +52,7 @@
 
 <script lang="ts" name="top_content" setup>
 import {CountTo} from 'vue3-count-to';
+
 const buttons = ref([
       {label: '陌生人', endVal: 9999, backgroundColor: '#FF8F1F'},
       {label: '区域入侵', endVal: 9999, backgroundColor: '#FA5151'},
@@ -118,9 +119,11 @@ const buttons = ref([
       //margin-left: 10px;
       width: 150px;
       margin: 0 0 10px 10px;
+
       .button_row {
         display: flex;
         align-items: center;
+
         .radio {
           width: 5px;
           height: 5px;
@@ -129,6 +132,7 @@ const buttons = ref([
           margin-right: 5px;
           margin-top: -10px;
         }
+
         .label {
           font-size: 14px;
           color: #666666;
@@ -136,6 +140,7 @@ const buttons = ref([
         }
 
       }
+
       .layout {
         font-size: 18px;
         font-weight: 700;

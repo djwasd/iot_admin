@@ -2,7 +2,7 @@
   <el-card class="top_content">
     <div class="title">今日考勤</div>
     <div class="content">
-      <mEcharts class="echarts" :options="state.options" :height="state.height" :width="state.width"></mEcharts>
+      <mEcharts :height="state.height" :options="state.options" :width="state.width" class="echarts"></mEcharts>
       <!--      <div class="content_left">左边</div>-->
       <div class="content_right">
         <div class="Below">
@@ -28,14 +28,14 @@
 
 </template>
 
-<script setup lang="ts" name="top_content">
-import  mEcharts from '@/common/echartsCustom/EchartsCustom.vue'
-import {shallowReactive} from "vue";
+<script lang="ts" name="top_content" setup>
+import mEcharts from '@/common/echartsCustom/EchartsCustom.vue'
 import {useLocalesI18n} from "@/locales/hooks";
 import {CountTo} from 'vue3-count-to';
 import {useUserStore} from "@/store";
 import {attendance} from "@/api/dashboard";
-const { t } = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'top_right']);
+
+const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'top_right']);
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
 const buttons = ref<any>([])
@@ -49,9 +49,9 @@ const attendance_data = ref({
 })
 const pic_data = ref<any>([])
 const state = ref({
-  height:'200px',
-  width:'160px',
-  options : {
+  height: '200px',
+  width: '160px',
+  options: {
     tooltip: {
       trigger: 'item',
       position: 'right',
@@ -85,21 +85,21 @@ const state = ref({
   }
 })
 
-const attendance_list  = async (plotId: number) => {
+const attendance_list = async (plotId: number) => {
   const res = await attendance(plotId)
-  if (res.data.code ===200){
+  if (res.data.code === 200) {
     attendance_data.value = res.data.data
     buttons.value = [
-      {  value: attendance_data.value.clockedCount,name: '已打卡', backgroundColor: '#3B81F4' },
-      {  value: attendance_data.value.noClockedCount,name: '未打卡', backgroundColor: '#FF8F1F' },
-      { value: attendance_data.value.lateCount, name: '迟到', backgroundColor: '#FF8F1F' },
-      {  value: attendance_data.value.leaveEarlyCount,name: '早退', backgroundColor: '#8A38F5' },
-      { value: attendance_data.value.abnormalCount, name: '异常考勤', backgroundColor: '#EB2F96' },
-      {  value: attendance_data.value.absenteeismCount,name: '旷工', backgroundColor: '#FA5151' },
+      {value: attendance_data.value.clockedCount, name: '已打卡', backgroundColor: '#3B81F4'},
+      {value: attendance_data.value.noClockedCount, name: '未打卡', backgroundColor: '#FF8F1F'},
+      {value: attendance_data.value.lateCount, name: '迟到', backgroundColor: '#FF8F1F'},
+      {value: attendance_data.value.leaveEarlyCount, name: '早退', backgroundColor: '#8A38F5'},
+      {value: attendance_data.value.abnormalCount, name: '异常考勤', backgroundColor: '#EB2F96'},
+      {value: attendance_data.value.absenteeismCount, name: '旷工', backgroundColor: '#FA5151'},
     ]
   }
-  pic_data.value =  buttons.value.map(item => {
-    const { backgroundColor, ...rest } = item;
+  pic_data.value = buttons.value.map(item => {
+    const {backgroundColor, ...rest} = item;
     return rest;
   });
 }
@@ -115,7 +115,7 @@ onMounted(async () => {
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .top_content {
   width: 100%;
   height: 260px;
@@ -150,6 +150,7 @@ onMounted(async () => {
     flex-wrap: wrap;
     align-items: flex-start; /* 垂直对齐方式设置为顶部对齐 */
     margin-top: 20px;
+
     .buttom {
       align-items: center;
       width: 90px;

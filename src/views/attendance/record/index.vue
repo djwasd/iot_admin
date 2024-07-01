@@ -1,21 +1,21 @@
 <template>
   <div class="container">
     <div class="left">
-      <div class="company">{{t('考勤记录')}}</div>
+      <div class="company">{{ t('考勤记录') }}</div>
       <div class="company_name " style="cursor: pointer" @click="handle_add">
         <div class="name">
-          <div class="name">{{t('所有')+t('考勤记录')}}</div>
+          <div class="name">{{ t('所有') + t('考勤记录') }}</div>
         </div>
-<!--        <img class="custom_image" src="@/assets/images/png/add.png" >-->
+        <!--        <img class="custom_image" src="@/assets/images/png/add.png" >-->
       </div>
       <div class="tree">
         <el-tree
             :data="departmental_date"
+            :default-expand-all=true
+            :highlight-current="true"
             :props="defaultProps"
             class="full-height"
             @node-click="handleNodeClick"
-            :default-expand-all =true
-            :highlight-current="true"
         >
           <template #default="{ node, data }">
 
@@ -39,15 +39,15 @@
           <div class="function_left">
             <el-date-picker
                 v-model="time"
-                type="datetimerange"
-                class="left_select"
-                :start-placeholder="t('开始日期')"
                 :end-placeholder="t('结束日期')"
+                :start-placeholder="t('开始日期')"
+                class="left_select"
                 format="YYYY-MM-DD HH:mm:ss"
+                type="datetimerange"
                 value-format="x"
             />
-            <el-button  @click="handle_festival"  class="left_button"  type="primary">{{ t('查询') }}</el-button>
-            <el-button  @click="handle_import"    >{{ t('考勤导出') }}</el-button>
+            <el-button class="left_button" type="primary" @click="handle_festival">{{ t('查询') }}</el-button>
+            <el-button @click="handle_import">{{ t('考勤导出') }}</el-button>
 
           </div>
           <div class="function_right">
@@ -57,7 +57,7 @@
                   :placeholder="t('请输入姓名或ID')"
               >
                 <template #append>
-                  <el-button @click="handle_search"  icon="mel-icon-search" />
+                  <el-button icon="mel-icon-search" @click="handle_search"/>
                 </template>
               </el-input>
             </div>
@@ -73,23 +73,23 @@
                 width="80"
             >
             </el-table-column>
-            <el-table-column  prop="personId" :label="t('ID')" width="150" />
-            <el-table-column prop="personName" :label="t('姓名')" width="120" />
-            <el-table-column prop="recognitionType" :label="t('识别模式')" width="120" >
+            <el-table-column :label="t('ID')" prop="personId" width="150"/>
+            <el-table-column :label="t('姓名')" prop="personName"/>
+            <el-table-column :label="t('识别模式')" prop="recognitionType">
               <template #default="{row}">
-                {{row.recognitionType===1?t('人脸'):row.recognitionType===2?t('指纹'):t('门禁')}}
+                {{ row.recognitionType === 1 ? t('人脸') : row.recognitionType === 2 ? t('指纹') : t('门禁') }}
               </template>
             </el-table-column>
-            <el-table-column prop="startAttachmentId" :label="t('抓拍照片')" width="120" >
+            <el-table-column :label="t('抓拍照片')" prop="startAttachmentId">
               <template #default="{row}">
                 <el-image
-                    style="width: 40px; height: 40px"
-                    :src="git_pic(row)"
-                    :zoom-rate="1.2"
                     :max-scale="7"
                     :min-scale="0.2"
-                    fit="cover"
                     :preview-src-list="[git_pic(row)]"
+                    :src="git_pic(row)"
+                    :zoom-rate="1.2"
+                    fit="cover"
+                    style="width: 40px; height: 40px"
                 >
                   <template #error>
                     <div class="image-slot">
@@ -97,19 +97,20 @@
                       <!--                    <mel-icon-picture style="width: 50px; height: 50px"></mel-icon-picture>-->
                     </div>
                   </template>
-                </el-image>              </template>
-            </el-table-column>
-            <el-table-column prop="startTimestamp" :label="t('上班考勤时间')" width="120" >
-              <template #default="{row}">
-                {{format_data(row.startTimestamp)}}
+                </el-image>
               </template>
             </el-table-column>
-            <el-table-column prop="endTimestamp" :label="t('下班考勤时间')" width="120" >
+            <el-table-column :label="t('上班考勤时间')" prop="startTimestamp">
               <template #default="{row}">
-                {{format_data(row.endTimestamp)}}
+                {{ format_data(row.startTimestamp) }}
               </template>
             </el-table-column>
-            <el-table-column prop="status" :label="t('状态')" width="120" >
+            <el-table-column :label="t('下班考勤时间')" prop="endTimestamp">
+              <template #default="{row}">
+                {{ format_data(row.endTimestamp) }}
+              </template>
+            </el-table-column>
+            <el-table-column :label="t('状态')" prop="status">
               <template #default="{row}">
                 {{ getStatusText(row) }}
               </template>
@@ -121,8 +122,8 @@
           <el-pagination
               v-model:current-page="current_page"
               v-model:page-size="page_size"
-              layout="prev, pager, next, jumper"
               :total="actions_data.total"
+              layout="prev, pager, next, jumper"
               @current-change="handleCurrentChange"
           />
 
@@ -147,10 +148,10 @@ const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.js
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
 const departmental_date = ref([
-  {id:'0'}
+  {id: '0'}
 ])
 const tree_node = ref('0')
-const actions_data =ref({
+const actions_data = ref({
   "current": 0,
   "pages": 0,
   "records": [
@@ -179,11 +180,11 @@ const defaultProps = {
   label: 'name',
   id: 'id'
 }
-const time =ref([])
-const search_person =ref('')//搜索字段
+const time = ref([])
+const search_person = ref('')//搜索字段
 //tbale状态优化
-const getStatusText = (row:any) => {
-  const statusLabels: { [key: number]: string }  = {
+const getStatusText = (row: any) => {
+  const statusLabels: { [key: number]: string } = {
     0: t('正常'),
     1: t('迟到'),
     3: t('早退'),
@@ -198,7 +199,7 @@ const getStatusText = (row:any) => {
 
   };
 
-  return statusLabels[row.status] ||  t('异常');
+  return statusLabels[row.status] || t('异常');
 };
 //点击tree
 const handleNodeClick = async (data: any) => {
@@ -206,44 +207,44 @@ const handleNodeClick = async (data: any) => {
   await actions_init(tree_node.value, current_page.value, page_size.value, time.value[0], time.value[1], search_person.value)
 
 }
-const handle_festival =async () => {
-  await actions_init(tree_node.value, current_page.value, page_size.value, time.value[0],time.value[1],search_person.value)
+const handle_festival = async () => {
+  await actions_init(tree_node.value, current_page.value, page_size.value, time.value[0], time.value[1], search_person.value)
 
 }
-const handleCurrentChange =async (val:number) => {
+const handleCurrentChange = async (val: number) => {
   current_page.value = val;
-  await actions_init(tree_node.value, current_page.value, page_size.value, time.value[0],time.value[1],search_person.value)
+  await actions_init(tree_node.value, current_page.value, page_size.value, time.value[0], time.value[1], search_person.value)
 
 };
-const set_index = (index:number)=>{
-  if (current_page.value >=1){
-    return (current_page.value -1) * page_size.value + index + 1
+const set_index = (index: number) => {
+  if (current_page.value >= 1) {
+    return (current_page.value - 1) * page_size.value + index + 1
 
-  }else  {
-    return (current_page.value ) * page_size.value + index + 1
+  } else {
+    return (current_page.value) * page_size.value + index + 1
 
   }
 }
-const git_pic =  (row:any) => {
+const git_pic = (row: any) => {
   if (row.startAttachmentId) {
     // const res =  upload_person(row.facePicture);
     const ipAddress = window.location.host;
-    const url =  `http://${ipAddress}/operation/cloud/web/sys/api/v1/attachment/actions/download?file_id=${row.startAttachmentId}`;
-    return  url
+    const url = `http://${ipAddress}/operation/cloud/web/sys/api/v1/attachment/actions/download?file_id=${row.startAttachmentId}`;
+    return url
   }
   return no_pic;
 };
 
-const handle_search =async () => {
+const handle_search = async () => {
   await actions_init(tree_node.value, current_page.value, page_size.value, time.value[0], time.value[1], search_person.value)
 
 }
 //初始化获取部门列表
 const handle_department = async (plotId: any) => {
-  const res = await actions_list( plotId)
+  const res = await actions_list(plotId)
   if (res.data.code === 200) {
     departmental_date.value = res.data.data
-    tree_node.value =   departmental_date.value[0].id
+    tree_node.value = departmental_date.value[0].id
   }
 }
 
@@ -255,12 +256,12 @@ const actions_init = async (
     endTimestamp?: number,
     name?: string) => {
   const res = await actions_page(orgId, page, size, startTimestamp, endTimestamp, name)
-  if (res.data.code ===200){
+  if (res.data.code === 200) {
     actions_data.value = res.data.data
   }
 }
 //考勤导出
-const handle_import =async () => {
+const handle_import = async () => {
   await import_actions(tree_node.value, current_page.value, page_size.value, time.value[0], time.value[1], search_person.value)
 }
 const import_actions = async (
@@ -271,18 +272,18 @@ const import_actions = async (
     endTimestamp?: number,
     name?: string) => {
   const res = await actions_import(orgId, page, size, startTimestamp, endTimestamp, name)
-  console.log(res,'--res')
-  if (res.data.code === 200){
+  console.log(res, '--res')
+  if (res.data.code === 200) {
     let excel = t('考勤记录表')
-    download_excel(res.data,excel );
-  }else {
-    message(res.data.message,{type:'error'})
+    download_excel(res.data, excel);
+  } else {
+    message(res.data.message, {type: 'error'})
   }
 
 }
 onMounted(async () => {
   await handle_department(plotId)//获取初始部门列表
-  await actions_init(tree_node.value,current_page.value,page_size.value)
+  await actions_init(tree_node.value, current_page.value, page_size.value)
 })
 </script>
 
@@ -405,15 +406,18 @@ onMounted(async () => {
             width: 120px;
             padding: 0 10px 0 0;
           }
+
           .left_button {
-            margin: 0 10px 0 20px ;
+            margin: 0 10px 0 20px;
 
           }
         }
       }
+
       .table-wrapper {
         padding-left: 20px;
       }
+
       .pagination {
         padding: 20px 20px;
         display: flex;
@@ -435,19 +439,22 @@ onMounted(async () => {
       height: 1px;
       border: 1px solid #A3A6AD;
       margin: 16px 0;
-      width:100%;
+      width: 100%;
 
     }
-    .demo_ruleForm{
+
+    .demo_ruleForm {
       .form_icon {
         padding: 0 20px 0 10px;
       }
+
       .form_minus {
-        padding-left: 10px ;
+        padding-left: 10px;
       }
     }
   }
 }
+
 :deep(.el-tree-node__content) {
   &:hover {
     color: #3B81F4;
@@ -472,7 +479,8 @@ onMounted(async () => {
     height: 20px;
   }
 }
-:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content)  {
+
+:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) {
   background-color: #FFEAEB !important;
   color: #D42A30;
 }

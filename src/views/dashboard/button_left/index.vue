@@ -1,6 +1,6 @@
 <template>
   <el-card class="top_content">
-    <div class="title">{{t('快捷功能')}}</div>
+    <div class="title">{{ t('快捷功能') }}</div>
     <div class="photo_top">
       <router-link v-for="(item, index) in date" :key="item.id" :to="item.link" class="photo_item">
         <img :src="item.images">
@@ -16,6 +16,7 @@ import personnel from '@/assets/images/png/personnel.png'
 import registration from '@/assets/images/png/registration.png'
 import surveillance from '@/assets/images/png/surveillance.png'
 import {useLocalesI18n} from "@/locales/hooks";
+
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'dashboard']);
 
 const date = ref([

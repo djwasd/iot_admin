@@ -1,30 +1,30 @@
 <template>
   <el-card class="top_content">
     <div class="top">
-      <div class="title">{{t('实时通行记录')}}</div>
+      <div class="title">{{ t('实时通行记录') }}</div>
 
       <router-link class="photo_item" to="/authorization/traffic_records">
-        <div class="top_right">{{t('查看详情')}}></div>
+        <div class="top_right">{{ t('查看详情') }}></div>
       </router-link>
     </div>
 
     <div class="floot">
       <div class="floot_top">
-        <div class="floot_content">{{t('姓名')}}</div>
-        <div class="floot_content">{{t('验证方式')}}</div>
-        <div class="floot_content">{{t('设备位置')}}</div>
-        <div class="floot_content end">{{t('通行时间')}}</div>
+        <div class="floot_content">{{ t('姓名') }}</div>
+        <div class="floot_content">{{ t('验证方式') }}</div>
+        <div class="floot_content">{{ t('设备位置') }}</div>
+        <div class="floot_content end">{{ t('通行时间') }}</div>
       </div>
       <vue3-seamless-scroll
-          class="scroll"
           v-model="isScroll"
-          :list="message"
-          :step="0.3"
           :hover="true"
           :limit-scroll-num="3"
+          :list="message"
+          :step="0.3"
           :wheel="true"
+          class="scroll"
       >
-        <div v-for="(item,index) in message" :key="item.index"   class="floot_button">
+        <div v-for="(item,index) in message" :key="item.index" class="floot_button">
           <div class="button_content">{{ item.content.name }}</div>
           <div class="button_content">{{ getButtonText(item.event) }}</div>
           <div class="button_content person">{{ item.content.deviceAddress }}</div>
@@ -37,24 +37,25 @@
 </template>
 
 <script lang="ts" setup>
-import { Vue3SeamlessScroll } from 'vue3-seamless-scroll';
+import {Vue3SeamlessScroll} from 'vue3-seamless-scroll';
 import {ref} from 'vue';
-import {useUserStore,useCommonStore} from "@/store";
+import {useCommonStore, useUserStore} from "@/store";
 import {useLocalesI18n} from "@/locales/hooks";
+
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'dashboard']);
-const isScroll=ref(true) //开始滾動
+const isScroll = ref(true) //开始滾動
 const UserStore = useUserStore()
 const useCommon = useCommonStore()
-const message_data = computed(()=>useCommon.localStorage_data)
+const message_data = computed(() => useCommon.localStorage_data)
 const message = ref([
   {
-    content:{
-    name:'',
-      deviceAddress:'',//设备位置
-      passTime:'',//通行时间
-      verificationMode:'',//
+    content: {
+      name: '',
+      deviceAddress: '',//设备位置
+      passTime: '',//通行时间
+      verificationMode: '',//
     },
-    event:''
+    event: ''
   }
 ])
 //验证方式
@@ -71,7 +72,7 @@ const getButtonText = (item) => {
 };
 
 
-onMounted(()=>{
+onMounted(() => {
   useCommon.init_loc()
 
 })
@@ -79,7 +80,7 @@ onMounted(()=>{
 watch(() => message_data.value,
     (newVal) => {
       message.value = newVal
-      message.value = message.value.filter(v => !v.content.eventId );
+      message.value = message.value.filter(v => !v.content.eventId);
 
     },
     {immediate: true},
@@ -108,7 +109,6 @@ watch(() => message_data.value,
       font-size: 14px;
     }
   }
-
 
 
   .box {
@@ -144,34 +144,41 @@ watch(() => message_data.value,
       flex-wrap: nowrap;
       overflow: hidden;
       margin-top: 24px;
+
       .floot_content {
         margin-right: 30px;
         width: 100px;
       }
+
       .end {
         width: 120px;
         margin-left: 9px;
       }
 
     }
-    .scroll{
+
+    .scroll {
       /* 必需要设置合适的高,因为他的原理是往列表最后添加列表重复元素，所以这个组件高不要大于其内容原先的最大高度 */
       height: 400px;
-      width:100%;
+      width: 100%;
       overflow: hidden;
+
       .floot_button {
         display: flex;
         flex-wrap: nowrap;
         overflow: hidden;
         margin-top: 15px;
         height: 100%;
+
         .button_content {
           margin-right: 30px;
           width: 100px;
         }
+
         .end {
           width: 140px;
         }
+
         .person {
           width: 110px;
         }
