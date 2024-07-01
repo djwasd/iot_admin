@@ -27,9 +27,8 @@
           </template>
         </el-table-column>
         <el-table-column prop="zip" :label="t('考勤人员')" >
-          <template #default>
-           <div class="see_table"> {{ $t('查看') }}</div>
-<!--            <el-button  size="small" type="primary" @click="handle_show">{{ $t('查看') }}</el-button>-->
+          <template #default="{row}">
+           <div class="see_table" @click="handle_view(row)"> {{ $t('查看') }}</div>
           </template>
         </el-table-column>
         <el-table-column fixed="right" :label="t('操作')" width="120">
@@ -50,6 +49,12 @@
       />
     </div>
     <drawer_dia :drawer_flag="drawer_data" @save="handle_drawer"></drawer_dia>
+    <personnel_dialog :id="person_dia.attendance.id"
+                      :data="person_dia.attendance.personList"
+                      :status="person_dia.status"
+                      :dialog="person_dia.dialog"
+                      :view="person_dia.view"
+                      @save_dialog='handle_save_dialog'></personnel_dialog>
   </div>
 
 </template>
@@ -61,14 +66,27 @@ import {useLocalesI18n} from "@/locales/hooks";
 import {attendance_add, attendance_del, attendance_put, rules_page} from "@/api/attendance";
 import {useUserStore} from "@/store";
 import {message} from "@/utils/components/message";
+import personnel_dialog from '../component/personnel_dialog/index.vue'
+
 import {filter_data, filterObject} from "@/utils/packagingmethod/utils";
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'attendance']);
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId //项目组织id
+
 const drawer_data = ref({
   drawer:false,
   status:'',
   attendance:{}
+})
+
+const person_dia = ref({
+  dialog:false,
+  status:'',
+  attendance:{
+    is:'',
+    personList:[]
+  },
+  view:''
 })
 const attendance_data = ref({
   "current": 0,
@@ -154,7 +172,14 @@ const handle_rules =()=>{
 
 }
 //删除规则
+const handle_view = (row:any)=>{
+  person_dia.value.status ='edit'
+  person_dia.value.dialog = true   //是当前抽屉的状态变成true
+  person_dia.value.attendance = JSON.parse(JSON.stringify(row))
+  person_dia.value.view ='view'
 
+
+}
 const handle_del = (row:any)=>{
   console.log('删除规则')
   ElMessageBox.confirm(

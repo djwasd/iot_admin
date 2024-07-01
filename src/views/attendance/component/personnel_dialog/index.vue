@@ -106,7 +106,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="handle_close">{{t('取消')}}</el-button>
-          <el-button type="primary" @click="handle_save">{{t('确认')}}</el-button>
+          <el-button type="primary" v-if="props.view !=='view'" @click="handle_save">{{t('确认')}}</el-button>
         </div>
       </template>
     </el-dialog>
@@ -144,6 +144,10 @@ const props = defineProps({  //父组件爱你传递过来的弹框状态
     default: [],
   },
   id:{
+    type: String as PropType<string>,
+    default: '',
+  },
+  view:{
     type: String as PropType<string>,
     default: '',
   }
@@ -207,7 +211,6 @@ const handle_all = ()=>{
     multiple_Ref.value.toggleAllSelection()
   }else  {
     multiple_Ref.value.clearSelection()
-
   }
 }
 
@@ -232,7 +235,6 @@ const handleCurrentChange = async (val: number) => {
   await personnel_list_all(tree_node.value,  current_page.value, page_size.value, 1,parentPath.value,true,attendanceRuleId.value,search_person.value)
   if (new_status.value ==='edit'){
     toggleSelection(edit_selection.value,new_status.value)
-
   }
 
 };
@@ -288,6 +290,7 @@ const getRowKey = (row:any)=>{
   return row.id
 }
 const toggleSelection = (list:any,status:string)=>{
+  console.log(list,'--list')
   if (multiple_Ref.value){
     if (status === 'add'){
       if (list.length !==0){
@@ -326,7 +329,6 @@ watch(
         await personnel_list_all(tree_node.value, 0, page_size.value, 1,parentPath.value,true,attendanceRuleId.value,search_person.value)
         toggleSelection(edit_selection.value,new_status.value)
         multipleSelection.value = newData
-
 
       }else  {
         edit_selection.value = newData
