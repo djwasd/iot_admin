@@ -111,7 +111,7 @@
             </el-table-column>
             <el-table-column prop="status" :label="t('状态')" width="120" >
               <template #default="{row}">
-                {{row.status===1?t('正常'):row.recognitionType===2?t('迟到'):t('早退;')}}
+                {{ getStatusText(row) }}
               </template>
             </el-table-column>
 
@@ -181,7 +181,25 @@ const defaultProps = {
 }
 const time =ref([])
 const search_person =ref('')//搜索字段
+//tbale状态优化
+const getStatusText = (row:any) => {
+  const statusLabels: { [key: number]: string }  = {
+    0: t('正常'),
+    1: t('迟到'),
+    3: t('早退'),
+    7: t('缺卡'),
+    9: t('旷工'),
+    15: t('正常-加班'),
+    4: t('迟到-早退'),
+    8: t('迟到-缺卡'),
+    16: t('迟到-加班'),
+    10: t('早退-缺卡'),
+    22: t('缺卡-加班'),
 
+  };
+
+  return statusLabels[row.status] ||  t('异常');
+};
 //点击tree
 const handleNodeClick = async (data: any) => {
   tree_node.value = data.id //当前点击的树id

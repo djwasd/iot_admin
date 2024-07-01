@@ -19,7 +19,7 @@
       </div>
       <div class="content_box" @click="handle_account">
         <img class="content_box_image" src="@/assets/images/png/diserbution.png">
-        <div class="floor" style="cursor: pointer">子账号 3 个</div>
+        <div class="floor" style="cursor: pointer">子账号管理</div>
       </div>
     </div>
     <!--    设备-->
