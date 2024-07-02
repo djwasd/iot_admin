@@ -7,11 +7,11 @@
           <div class="name_left">{{ depart_name.slice(0, 1) }}</div>
           <div class="depart_name">{{ depart_name }}</div>
         </div>
-        <img class="custom_image" src="@/assets/images/png/add.png" style="cursor: pointer" @click="handle_add">
+                <img class="custom_image" src="@/assets/images/png/add.png" style="cursor: pointer" @click="handle_add">
       </div>
       <div class="tree">
         <el-tree
-            :data="departmental_date[0].children"
+            :data="departmental_date.children"
             :default-expand-all=true
             :highlight-current="true"
             :props="defaultProps"
@@ -83,7 +83,7 @@ const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
 const depart_name =ref('')
 const parentPath = ref('/0/')
-const department_id=ref('')
+const department_parentPath =ref('')
 
 const departmental_date = ref([
   {
@@ -182,8 +182,7 @@ const handle_department = async (plotId: any) => {
     tree_node.value = departmental_date.value[0].id
     depart_name.value = departmental_date.value[0].name
     configuration.value = departmental_date.value[0].name
-    department_id.value = departmental_date.value[0].id
-
+    department_parentPath.value = departmental_date.value[0].parentPath
   }
 }
 const handle_del_department = async (id: number) => {
@@ -231,7 +230,7 @@ const handle_add = async () => {
     inputErrorMessage: t('不能为空')
   })
       .then(async ({value}) => {
-        await handle_add_department( department_id.value, value)
+        await handle_add_department( department_parentPath.value, value)
         await handle_department(plotId)//获取初始部门列表
       })
       .catch(() => {
