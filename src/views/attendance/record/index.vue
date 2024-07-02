@@ -277,7 +277,7 @@ const import_actions = async (
     let excel = t('考勤记录表')
     download_excel(res.data, excel);
   } else {
-    message(res.data.message, {type: 'error'})
+    message(t('没有数据需要导出!'), {type: 'error'})
   }
 
 }
