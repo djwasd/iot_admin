@@ -158,6 +158,7 @@ interface RuleForm {
   deviceName: string,
   address: string
   deviceType: string,
+  plotId: number
 
 }
 
@@ -184,10 +185,10 @@ const device_list = ref({
 
 //dialog表单校验
 const rules = computed<FormRules>(() => ({
-  serialNo: [
-    {required: true, message: t('设备序列号不能为空'), trigger: 'blur'},
-    {validator: validate_serial, trigger: 'blur'}
-  ],
+  // serialNo: [
+  //   {required: true, message: t('设备序列号不能为空'), trigger: 'blur'},
+  //   {validator: validate_serial, trigger: 'blur'}
+  // ],
   deviceName: [
     {required: true, message: t('设备名称不能为空'), trigger: 'blur'},
   ],

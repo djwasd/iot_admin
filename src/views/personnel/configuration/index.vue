@@ -81,15 +81,13 @@ import {message} from "@/utils/components/message";
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../lang/${locale}.json`), 'person_table']);
 const UserStore = useUserStore()
 const plotId = UserStore.user.plotId
-console.log(plotId, '--plotId')
-const depart_name = computed(() => UserStore.user.plotName)
-console.log(depart_name, '--depart_name')
+const depart_name =ref('')
 const parentPath = ref('/0/')
 
 
 const departmental_date = ref([])
 const tree_node = ref('0')
-const configuration = ref<string>('configuration')
+const configuration = ref<string>('')
 
 interface Tree {
   id: string;
@@ -107,9 +105,10 @@ const defaultProps = {
 
 //点击tree
 const handleNodeClick = (data: any) => {
-  console.log(data, '--data')
   tree_node.value = data.id
   parentPath.value = data.parentPath
+  configuration.value = data.name
+
 }
 const handleCommand = (command: string, data: any) => {
   console.log('Command:', command);
@@ -171,6 +170,8 @@ const handle_department = async (plotId: any) => {
     departmental_date.value = res.data.data
     console.log(departmental_date.value, '-- departmental_date.value')
     tree_node.value = departmental_date.value[0].id
+    depart_name.value = departmental_date.value[0].name
+    configuration.value = departmental_date.value[0].name
     console.log(tree_node.value, '-- tree_node.value')
   }
 }

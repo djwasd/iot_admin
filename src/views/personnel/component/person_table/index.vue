@@ -99,8 +99,7 @@ import {useUserStore} from "@/store";
 
 const UserStore = useUserStore()
 const plotId = computed(() => UserStore.user.plotId)
-const depart_name = computed(() => UserStore.user.plotName)
-console.log(plotId, '--当前组织id')
+const depart_name =ref('')
 const {t} = useLocalesI18n({}, [(locale: string) => import(`../../lang/${locale}.json`), 'person_table']);
 const props = defineProps({
   treeNode: {
@@ -117,7 +116,7 @@ const props = defineProps({
     default: '0/0'
   },
 })
-console.log(props, '---props-----')
+console.log(props, '---props------')
 const treeNode = ref<any>('0')
 const parentPath = ref<string>('0/0')
 const export_dia = ref(false)
@@ -369,11 +368,12 @@ const set_index = (index) => {
 const route = useRoute();
 
 watch(
-    [() => props.treeNode, () => props.parent_path, route],
-    async ([new_treeNode, new_parentPath]) => {
+    [() => props.treeNode, () => props.parent_path, () => props.title,route,],
+    async ([new_treeNode, new_parentPath,new_title]) => {
       console.log(new_parentPath, '--props.new_parentPath');
       treeNode.value = new_treeNode;
       parentPath.value = new_parentPath;
+      depart_name.value = new_title
       search_person.value = ''
       await personnel_list_all(treeNode.value, current_page.value, 12, 1, parentPath.value); // 默认查询第一页
     },
